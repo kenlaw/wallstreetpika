@@ -376,20 +376,21 @@
         </div>
 
         <div class="control-panel">
-            <span class="version-tag">v2.5</span>
+            <span class="version-tag">v2.6</span>
             <!-- Market Status -->
             <div id="global-status"></div>
             
-            <!-- FIX 3: Refresh Rate Selector -->
+            <!-- Refresh Rate Selector (Default 2s) -->
             <select class="refresh-select" onchange="changeRefreshRate(this.value)">
-                <option value="3000" selected>⏱️ 3s</option>
+                <option value="2000" selected>⏱️ 2s</option>
+                <option value="3000">⏱️ 3s</option>
                 <option value="5000">⏱️ 5s</option>
                 <option value="10000">⏱️ 10s</option>
                 <option value="30000">⏱️ 30s</option>
                 <option value="0">⏱️ STOP</option>
             </select>
 
-            <!-- FIX 1: Privacy Toggle -->
+            <!-- Privacy Toggle -->
             <button class="btn btn-privacy" id="privacy-btn" onclick="togglePrivacy()" title="Privacy Mode">
                 👁️
             </button>
@@ -462,7 +463,11 @@
 
     <script>
         const API_KEY = 'd62qgopr01qnpu82ah0gd62qgopr01qnpu82ah10';
-        const STORAGE_KEY = 'pika_stocks_v2_5'; 
+        // --- DATA MIGRATION LOGIC (V2.6) ---
+        // New key for v2.6
+        const STORAGE_KEY = 'pika_stocks_v2_6'; 
+        // List of previous keys to check for migration
+        const LEGACY_KEYS = ['pika_stocks_v2_5', 'pika_stocks_v2_3', 'pika_stocks_v2_2', 'pika_stocks_v2_1'];
         
         // Default Config
         const DEFAULT_STOCKS = [
@@ -476,9 +481,9 @@
         let loanAmount = 0;
         let usdHkdRate = 7.78; 
         let snapshots = [];
-        let isPrivacy = false; // Privacy toggle state
+        let isPrivacy = false; 
         let refreshIntervalId = null;
-        let refreshDelay = 3000; // Default 3s
+        let refreshDelay = 2000; // FIX: Default 2s
 
         // --- Pika Sound Logic ---
         function playPika() {
@@ -542,12 +547,12 @@
         // --- IMPORT / EXPORT FUNCTIONS ---
         function exportData() {
             const data = {
-                version: "2.5",
+                version: "2.6",
                 date: new Date().toISOString(),
                 stocks: marketData,
                 loan: loanAmount,
                 snapshots: snapshots,
-                privacy: isPrivacy // Save privacy state
+                privacy: isPrivacy
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
@@ -574,7 +579,13 @@
                         
                         marketData.forEach(s => { s.loading = true; if(!s.perf) s.perf = generatePerfStats('High'); });
                         saveData();
-                        loadStocks(); // Reload to apply UI
+                        
+                        // FIX: Explicitly update UI and Fetch after import
+                        updatePrivacyUI(); 
+                        document.getElementById('loan-input').value = loanAmount;
+                        render(); 
+                        renderHistory();
+                        fetchData(); 
                         alert('Data Imported Successfully!');
                     } else {
                         throw new Error("Invalid Format");
@@ -592,7 +603,7 @@
                     stocks: data.map(s => ({ symbol: s.symbol, beta: s.beta || 1.2, perf: s.perf, shares: s.shares || 0 })),
                     loan: loan || 0,
                     snapshots: snaps || [],
-                    privacy: privacy // FIX 1: Persist Privacy
+                    privacy: privacy
                 };
                 const json = JSON.stringify(payload);
                 try { localStorage.setItem(STORAGE_KEY, json); } catch(e){}
@@ -600,25 +611,52 @@
                 try { window.name = json; } catch(e){}
             },
             load: function() {
+                // 1. Try Load Current Key
                 let json = null;
                 try { json = localStorage.getItem(STORAGE_KEY); } catch(e){}
                 if(!json) try { json = sessionStorage.getItem(STORAGE_KEY); } catch(e){}
                 if(!json && window.name && window.name.startsWith('{')) { try { json = window.name; } catch(e){} }
-                return json ? JSON.parse(json) : null;
+                
+                if (json) return JSON.parse(json);
+
+                // 2. Migration: Try Legacy Keys if current is empty
+                for (let key of LEGACY_KEYS) {
+                    try {
+                        let oldJson = localStorage.getItem(key) || sessionStorage.getItem(key);
+                        if (oldJson) {
+                            console.log("Migrating from " + key);
+                            const parsed = JSON.parse(oldJson);
+                            // Auto-save to new key to complete migration
+                            this.save(
+                                parsed.stocks || parsed, 
+                                parsed.loan || 0, 
+                                parsed.snapshots || [], 
+                                parsed.privacy || false
+                            );
+                            return parsed;
+                        }
+                    } catch(e) {}
+                }
+
+                return null;
             }
         };
 
         function loadStocks() {
             const saved = SmartStorage.load();
-            if (saved && saved.stocks && Array.isArray(saved.stocks)) {
-                marketData = saved.stocks;
-                loanAmount = saved.loan || 0;
-                snapshots = saved.snapshots || [];
-                isPrivacy = saved.privacy || false;
-                marketData.forEach(s => {
-                    if (!s.perf) s.perf = generatePerfStats('High');
-                    s.loading = true; 
-                });
+            if (saved && (saved.stocks || Array.isArray(saved))) {
+                // Handle different structures from old versions
+                const dataRaw = saved.stocks || saved; 
+                if (Array.isArray(dataRaw)) {
+                    marketData = dataRaw;
+                    loanAmount = saved.loan || 0;
+                    snapshots = saved.snapshots || [];
+                    isPrivacy = saved.privacy || false;
+                    marketData.forEach(s => {
+                        if (!s.perf) s.perf = generatePerfStats('High');
+                        s.loading = true; 
+                    });
+                }
             } else {
                 marketData = JSON.parse(JSON.stringify(DEFAULT_STOCKS));
                 marketData.forEach(s => { s.perf = generatePerfStats('High'); s.loading = true; });

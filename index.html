@@ -66,6 +66,11 @@
             margin-bottom: 24px; 
         }
         
+        .welcome-quote {
+            font-size: 1.2rem; font-weight: 700; color: #374151; 
+            margin-bottom: 10px;
+        }
+        
         .countdown-text {
             font-family: 'Roboto Mono', monospace;
             font-size: 0.9rem;
@@ -141,9 +146,9 @@
 
         .control-panel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
-        /* Updated Info Group for Version & Status (Stacked) */
+        /* Updated Info Group for Version & Status */
         .info-group {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 6px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 4px;
         }
 
         .version-tag {
@@ -152,7 +157,7 @@
             line-height: 1; margin-bottom: 2px;
         }
         
-        /* New API Status Text Style (Subtle) */
+        /* API Status Text Style */
         .api-status-text {
             font-family: 'Roboto Mono', monospace; font-size: 0.6rem; 
             color: #cbd5e1; /* Very light grey */
@@ -161,7 +166,6 @@
             letter-spacing: 0.5px;
             white-space: nowrap;
         }
-        /* Active Processing State */
         .api-status-text.active { 
             color: #d97706; /* Dark Yellow/Orange */
             font-weight: 700;
@@ -281,7 +285,60 @@
         .ticker-item { display: inline-block; margin-right: 30px; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
+        /* --- DASHBOARD TOOLBAR --- */
+        .dashboard-toolbar {
+            max-width: 1200px; margin: 0 auto 16px auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .toolbar-group { display: flex; gap: 8px; }
+        .tool-btn {
+            background: #fff; border: 1px solid #d1d5db; border-radius: 8px;
+            padding: 6px 12px; font-size: 0.75rem; font-weight: 700; color: #4b5563;
+            cursor: pointer; display: flex; align-items: center; gap: 4px;
+            transition: all 0.2s;
+        }
+        .tool-btn:hover { background: #f9fafb; color: var(--text-primary); border-color: #9ca3af; }
+        .tool-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        
+        /* List View Styles */
+        .dashboard-grid.list-view {
+            grid-template-columns: 1fr; gap: 12px;
+        }
+        .dashboard-grid.list-view .card {
+            flex-direction: row; align-items: center; padding: 12px 16px;
+            min-height: auto; justify-content: space-between;
+        }
+        .dashboard-grid.list-view .card-top {
+            padding: 0; flex: 1; display: flex; align-items: center; justify-content: flex-start;
+            margin-bottom: 0; border: none;
+        }
+        .dashboard-grid.list-view .stock-info {
+            display: flex; align-items: center; gap: 10px; padding: 0;
+        }
+        .dashboard-grid.list-view .stock-info h2 { font-size: 1.2rem; margin: 0; }
+        .dashboard-grid.list-view .market-tag { display: none; } /* Hide tag in list for space */
+        
+        .dashboard-grid.list-view .price-group {
+            display: flex; align-items: center; gap: 10px; margin-left: 20px; text-align: left;
+        }
+        .dashboard-grid.list-view .price-val { font-size: 1.1rem; }
+        .dashboard-grid.list-view .price-change { font-size: 0.8rem; }
+        .dashboard-grid.list-view .data-meta { display: none; }
+        
+        .dashboard-grid.list-view .holdings-row {
+            background: transparent; border: none; padding: 0; width: auto;
+            flex-direction: row; gap: 10px; margin-left: auto; margin-right: 40px; /* Space for delete btn */
+        }
+        .dashboard-grid.list-view .holdings-input-group { gap: 4px; }
+        .dashboard-grid.list-view .shares-input { width: 80px; padding: 4px; font-size: 0.8rem; }
+        .dashboard-grid.list-view .holdings-label { display: none; }
+        .dashboard-grid.list-view .holdings-val { font-size: 0.85rem; min-width: 80px; text-align: right; }
+        
+        .dashboard-grid.list-view .delete-btn { top: 50%; transform: translateY(-50%); right: 10px; border-radius: 6px; width: 24px; height: 24px; }
+
+
         .data-tools { max-width: 1200px; margin: 0 auto 20px auto; display: flex; gap: 10px; justify-content: flex-end; }
         .history-list { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
         .history-card { background: #fff; border-radius: 12px; padding: 16px 20px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow); }
@@ -342,6 +399,11 @@
             .asset-panel { grid-template-columns: 1fr; gap: 16px; }
             .dashboard-grid { grid-template-columns: 1fr; } 
             .h-stats { flex-direction: column; gap: 8px; }
+            
+            /* Responsive List View adjustments */
+            .dashboard-grid.list-view .card { flex-wrap: wrap; }
+            .dashboard-grid.list-view .card-top { width: 100%; justify-content: space-between; margin-bottom: 8px; }
+            .dashboard-grid.list-view .holdings-row { width: 100%; margin: 0; border-top: 1px dashed #e5e7eb; padding-top: 8px; }
         }
     </style>
 </head>
@@ -368,9 +430,8 @@
         </div>
 
         <div class="control-panel">
-            <!-- FIX: Stacked Info Group -->
             <div class="info-group">
-                <span class="version-tag">v4.5</span>
+                <span class="version-tag">v4.7</span>
                 <span id="api-status-top" class="api-status-text">Idle</span>
             </div>
             
@@ -384,8 +445,8 @@
                 <option value="0">⏱️ STOP</option>
             </select>
             <button class="btn btn-privacy" id="privacy-btn" onclick="togglePrivacy()" title="Privacy Mode">👁️</button>
-            <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline">📖 聖經</a>
-            <input type="text" id="new-stock-input" placeholder="NVDA" maxlength="5">
+            <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline">BIBLE</a>
+            <input type="text" id="new-stock-input" placeholder="CODE" maxlength="5">
             <button class="btn btn-primary" onclick="addNewStock()">+</button>
         </div>
     </header>
@@ -419,6 +480,19 @@
         <!-- Market Overview Bar -->
         <div class="market-overview" id="market-overview">
             <!-- JS Populated -->
+        </div>
+
+        <!-- NEW: Dashboard Toolbar -->
+        <div class="dashboard-toolbar">
+             <div style="font-size:0.7rem; color:#9ca3af; font-weight:700;">STOCKS</div>
+             <div class="toolbar-group">
+                 <button class="tool-btn" onclick="toggleSort()">
+                     <span style="font-size:1rem;">⇅</span> <span id="sort-text">Def</span>
+                 </button>
+                 <button class="tool-btn" onclick="toggleView()">
+                     <span style="font-size:1rem;">⊞</span> <span id="view-text">Grid</span>
+                 </button>
+             </div>
         </div>
 
         <div class="ticker-container">
@@ -458,17 +532,16 @@
             { symbol: 'UPST', beta: 2.8, shares: 0 }
         ];
 
-        // Market Overview Symbols (Using ETFs for reliability on Free Tier)
         const MARKET_SYMBOLS = [
             { s: 'BINANCE:BTCUSDT', n: 'BTC' },
             { s: 'BINANCE:ETHUSDT', n: 'ETH' },
-            { s: 'USO', n: 'Oil ETF' },    // ETF Proxy
-            { s: 'GLD', n: 'Gold ETF' },   // ETF Proxy
-            { s: 'IEF', n: '10Y Bond ETF' }, // ETF Proxy
-            { s: 'DIA', n: 'Dow ETF' },     // ETF Proxy
-            { s: 'QQQ', n: 'Nas ETF' },     // ETF Proxy
-            { s: 'SPY', n: 'S&P ETF' },     // ETF Proxy
-            { s: 'UUP', n: 'USD ETF' }      // ETF Proxy
+            { s: 'USO', n: 'Oil ETF' },    
+            { s: 'GLD', n: 'Gold ETF' },   
+            { s: 'IEF', n: '10Y Bond ETF' }, 
+            { s: 'DIA', n: 'Dow ETF' },     
+            { s: 'QQQ', n: 'Nas ETF' },     
+            { s: 'SPY', n: 'S&P ETF' },     
+            { s: 'UUP', n: 'USD ETF' }      
         ];
         let marketOverviewData = {}; 
 
@@ -487,6 +560,11 @@
         let nextFetchTime = 0;
         let statusUpdateTimer = null;
 
+        // View & Sort State
+        let currentSort = 'def'; 
+        // Fix: Default to list view on mobile
+        let currentView = window.innerWidth <= 768 ? 'list' : 'grid';
+
         function startWelcomeCountdown() {
             let count = 8;
             const textEl = document.getElementById('countdown-text');
@@ -504,7 +582,10 @@
             setTimeout(() => { screen.style.display = 'none'; }, 500);
         }
 
-        window.addEventListener('load', startWelcomeCountdown);
+        window.addEventListener('load', () => {
+            // Only start countdown here
+            startWelcomeCountdown();
+        });
 
         function playPika() {
             if (!window.speechSynthesis) return;
@@ -558,7 +639,7 @@
 
         function exportData() {
             const data = {
-                version: "4.5",
+                version: "4.7",
                 date: new Date().toISOString(),
                 stocks: marketData,
                 loan: loanAmount,
@@ -671,8 +752,8 @@
             }
 
             updatePrivacyUI();
+            updateViewUI(); // <--- Ensure this is here
             render();
-            // Initialize Market Overview
             MARKET_SYMBOLS.forEach(m => { marketOverviewData[m.s] = { price: 0, change: 0 }; });
             renderMarketOverview();
             
@@ -1117,11 +1198,55 @@
             }).join('');
         }
 
+        // --- NEW: View & Sort Logic ---
+        function toggleSort() {
+            if (currentSort === 'def') currentSort = 'desc';
+            else if (currentSort === 'desc') currentSort = 'asc';
+            else currentSort = 'def';
+            
+            document.getElementById('sort-text').innerText = 
+                currentSort === 'def' ? 'Def' : (currentSort === 'desc' ? 'High' : 'Low');
+            
+            render();
+        }
+
+        function toggleView() {
+            currentView = currentView === 'grid' ? 'list' : 'grid';
+            updateViewUI();
+            render();
+        }
+
+        function updateViewUI() {
+            const icon = currentView === 'grid' ? '⊞' : '☰';
+            const text = currentView === 'grid' ? 'Grid' : 'List';
+            const btn = document.getElementById('view-text');
+            if(btn) {
+                btn.innerText = text;
+                btn.previousElementSibling.innerText = icon;
+            }
+            
+            const grid = document.getElementById('app');
+            if(grid) {
+                if(currentView === 'list') grid.classList.add('list-view');
+                else grid.classList.remove('list-view');
+            }
+        }
+
         function render() {
             const container = document.getElementById('app');
             const state = getMarketState();
+            
+            // --- NEW: Sorting Logic ---
+            let displayData = [...marketData];
+            if (currentSort !== 'def') {
+                displayData.sort((a, b) => {
+                    const ca = a.changePercent || 0;
+                    const cb = b.changePercent || 0;
+                    return currentSort === 'asc' ? ca - cb : cb - ca;
+                });
+            }
 
-            container.innerHTML = marketData.map(stock => {
+            container.innerHTML = displayData.map(stock => {
                 const p = stock.currentPrice ? stock.currentPrice.toFixed(2) : '--';
                 const cp = stock.changePercent ? stock.changePercent.toFixed(2) : '0.00';
                 
@@ -1190,8 +1315,6 @@
                             ${holdingDisplay}
                         </div>
                     </div>
-
-                    <!-- Clean UI: No Risk Score Bar -->
                 </div>`;
             }).join('');
         }

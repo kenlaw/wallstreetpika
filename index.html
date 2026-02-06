@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wallstreet Pika Risk Check Dashboard</title>
+    <title>Mini Dashboard</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Roboto+Mono:wght@500;700&display=swap');
 
@@ -52,7 +52,6 @@
             color: var(--text-primary);
             margin: 0;
             padding: 16px;
-            /* 預留極大底部空間，防止 iframe 裁切 */
             padding-bottom: 200px; 
             min-height: 100%;
             background: transparent;
@@ -61,7 +60,7 @@
         /* --- Header --- */
         header {
             max-width: 1200px;
-            margin: 0 auto 24px auto;
+            margin: 0 auto 16px auto;
             background: #fff;
             border-radius: var(--radius);
             padding: 20px;
@@ -99,29 +98,39 @@
             display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
         }
 
-        /* Market Badge */
+        /* Market Badge - Updated to match buttons height */
         .market-badge {
-            font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; white-space: nowrap;
+            font-size: 0.85rem; /* Match version tag */
+            padding: 8px 12px;  /* Match version tag padding */
+            border-radius: 8px; /* Match version tag radius */
+            font-weight: 700; 
+            text-transform: uppercase; 
+            white-space: nowrap;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
         }
-        .market-badge.open { background: #dcfce7; color: #15803d; }
-        .market-badge.pre { background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
-        .market-badge.post { background: #f3e8ff; color: #7e22ce; }
-        .market-badge.closed { background: #f3f4f6; color: #6b7280; }
+        .market-badge.open { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+        .market-badge.pre { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
+        .market-badge.post { background: #f3e8ff; color: #7e22ce; border-color: #e9d5ff; }
+        .market-badge.closed { background: #f3f4f6; color: #6b7280; border-color: #e5e7eb; }
 
-        /* Controls */
         .control-panel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
         .version-tag {
             font-family: 'Roboto Mono', monospace; font-size: 0.85rem; color: #9ca3af; 
             background: #f9fafb; padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-weight: 700;
+            line-height: 1.2;
         }
 
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 12px;
-            border-radius: 8px; font-size: 0.9rem; width: 90px; font-weight: 700;
-            text-transform: uppercase; text-align: center; outline: none;
+            border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+            text-align: center; outline: none; transition: all 0.2s;
         }
-        input[type="text"]:focus { border-color: var(--pika-yellow); background: #fff; }
+        input:focus { border-color: var(--pika-yellow); background: #fff; }
 
         .btn {
             border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;
@@ -131,29 +140,113 @@
         .btn-primary:hover { background: #fcd34d; }
         .btn-outline { background: white; border: 1px solid #d1d5db; color: var(--text-secondary); }
 
-        /* --- Ticker --- */
+        /* --- TABS Navigation --- */
+        .tabs {
+            max-width: 1200px; margin: 0 auto 16px auto; display: flex; gap: 10px;
+        }
+        .tab-btn {
+            padding: 10px 20px; border-radius: 12px; background: #fff; border: 1px solid #e5e7eb;
+            font-weight: 700; color: var(--text-secondary); cursor: pointer; flex: 1; text-align: center;
+            transition: all 0.2s; font-size: 0.9rem; box-shadow: var(--shadow);
+        }
+        .tab-btn.active {
+            background: var(--text-primary); color: #fff; border-color: var(--text-primary);
+        }
+
+        /* --- ASSET PANEL --- */
+        .asset-panel {
+            max-width: 1200px; margin: 0 auto 24px auto;
+            background: #1e293b; 
+            border-radius: var(--radius);
+            padding: 20px; color: #fff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px; align-items: start;
+        }
+
+        .ap-item { display: flex; flex-direction: column; gap: 6px; }
+        .ap-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .ap-val { font-family: 'Roboto Mono', monospace; font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; }
+        .ap-sub { font-size: 0.75rem; color: #94a3b8; font-family: 'Roboto Mono', monospace; font-weight: 600;}
+        
+        .ap-input {
+            background: #ffffff; border: 2px solid #e5e7eb; color: #111827;
+            width: 100%; max-width: 140px; padding: 10px; text-align: left;
+            border-radius: 8px; font-weight: 700; font-family: 'Roboto Mono', monospace;
+        }
+        .ap-input:focus { border-color: var(--pika-yellow); outline: none; }
+
+        .net-val { color: var(--pika-yellow); text-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
+        .snap-btn { background: #374151; color: #fff; border: 1px solid #475569; font-size: 0.8rem; padding: 8px 16px; border-radius: 8px; cursor: pointer; margin-top: 5px; width: 100%; font-weight: 600;}
+        .snap-btn:hover { background: #475569; }
+
+        /* --- View Containers --- */
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        /* --- Dashboard Specific --- */
         .ticker-container {
             max-width: 1200px; margin: 0 auto 24px auto; background: #fff; border-radius: 50px;
             padding: 4px; box-shadow: var(--shadow); border: 1px solid #e5e7eb;
             height: 40px; display: flex; align-items: center; overflow: hidden;
         }
+        /* Group to hold label and sound button */
+        .ticker-left-group {
+            display: flex; align-items: center; gap: 6px; padding-left: 4px; margin-right: 10px; z-index: 2; background: #fff;
+        }
         .ticker-label {
             background: var(--pika-yellow); color: #422006; font-size: 0.7rem; font-weight: 800;
             padding: 0 12px; height: 30px; border-radius: 40px; display: flex; align-items: center;
-            margin-right: 8px; flex-shrink: 0; z-index: 2;
+            flex-shrink: 0;
         }
+        /* Pika Sound Button */
+        .sound-btn {
+            background: #fef08a; border: 1px solid #facc15; color: #422006;
+            width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.9rem; transition: transform 0.1s;
+        }
+        .sound-btn:active { transform: scale(0.9); }
+
         .ticker-content { white-space: nowrap; animation: marquee 120s linear infinite; }
         .ticker-item { display: inline-block; margin-right: 30px; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-        /* --- Dashboard Grid --- */
-        .dashboard {
+        .dashboard-grid {
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
             gap: 20px;
             max-width: 1200px; margin: 0 auto;
         }
 
+        /* --- History & Data Management --- */
+        .data-tools {
+            max-width: 1200px; margin: 0 auto 20px auto;
+            display: flex; gap: 10px; justify-content: flex-end;
+        }
+
+        .history-list {
+            max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px;
+        }
+        .history-card {
+            background: #fff; border-radius: 12px; padding: 16px 20px; border: 1px solid #e5e7eb;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+            box-shadow: var(--shadow);
+        }
+        .h-time { font-size: 0.8rem; color: #6b7280; font-weight: 600; min-width: 120px; }
+        .h-stats { display: flex; gap: 20px; flex: 1; align-items: center; }
+        .h-stat-item { display: flex; flex-direction: column; }
+        .h-label { font-size: 0.65rem; color: #9ca3af; text-transform: uppercase; font-weight: 700; }
+        .h-val { font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 1rem; color: var(--text-primary); }
+        .h-val.net { color: #059669; }
+        .h-actions { display: flex; gap: 10px; align-items: center; }
+        .h-details { width: 100%; border-top: 1px dashed #e5e7eb; margin-top: 10px; padding-top: 10px; display: none; }
+        .history-card.open .h-details { display: block; }
+        .h-stock-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; border-bottom: 1px solid #f9fafb; }
+        
+        .toggle-btn { background: none; border: none; color: #6b7280; cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
+        .del-hist-btn { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.75rem; }
+
+        /* --- Stock Card --- */
         .card {
             background: var(--card-bg); border-radius: var(--radius); border: 1px solid #e5e7eb;
             box-shadow: var(--shadow); transition: transform 0.2s; position: relative;
@@ -161,7 +254,7 @@
         }
         
         .card-top {
-            padding: 16px 20px 12px 20px; display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 16px 20px 10px 20px; display: flex; justify-content: space-between; align-items: flex-start;
         }
         
         .stock-info h2 { margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
@@ -187,36 +280,39 @@
         }
         .delete-btn:hover { background: #fee2e2; color: #ef4444; }
 
-        /* --- Performance Stats --- */
+        .holdings-row {
+            background: #f9fafb; padding: 10px 20px; border-top: 1px dashed #e5e7eb; border-bottom: 1px dashed #e5e7eb;
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        }
+        .holdings-input-group { display: flex; align-items: center; gap: 6px; }
+        .holdings-label { font-size: 0.7rem; font-weight: 700; color: #6b7280; text-transform: uppercase; }
+        .shares-input { width: 70px; padding: 4px 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid #d1d5db; }
+        .holdings-val { font-family: 'Roboto Mono', monospace; font-weight: 700; color: var(--text-primary); font-size: 0.9rem; }
+
         .perf-row {
             display: flex; justify-content: flex-start; gap: 12px;
-            padding: 0 20px 12px 20px; border-bottom: 1px dashed #f3f4f6;
+            padding: 10px 20px; border-bottom: 1px dashed #f3f4f6;
         }
         .perf-item { font-size: 0.7rem; color: var(--text-secondary); font-family: 'Roboto Mono', monospace; font-weight: 500; }
         .perf-val { font-weight: 700; margin-left: 2px; }
 
-        /* --- Risk Bar --- */
         .risk-box { margin: 12px 20px 16px 20px; padding: 12px; border-radius: 12px; background: #f9fafb; border: 1px solid #f3f4f6; }
         .risk-header { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; }
         .progress-bg { height: 6px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
         .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
 
-        /* Metrics */
         .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid #e5e7eb; background: #fafafa; margin-top: auto; }
         .metric { padding: 10px; text-align: center; border-right: 1px solid #e5e7eb; }
         .metric:last-child { border-right: none; }
         .m-label { font-size: 0.65rem; color: #9ca3af; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
         .m-val { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); font-family: 'Roboto Mono', monospace; }
 
-        /* Utils */
         .text-up { color: var(--col-up); } .text-down { color: var(--col-down); } .text-flat { color: var(--col-flat); }
         
-        /* --- Pokeball Loader --- */
         .loader { 
             position: absolute; inset: 0; background: rgba(255,255,255,0.9); 
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; 
         }
-        
         .pokeball {
             width: 40px; height: 40px; background: #fff;
             border: 3px solid #333; border-radius: 50%;
@@ -231,7 +327,6 @@
             content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 12px; height: 12px; background: #fff; border: 3px solid #333; border-radius: 50%; z-index: 2;
         }
-        
         .loading-text { font-size: 0.7rem; font-weight: 700; color: #6b7280; margin-top: 8px; }
 
         @keyframes shake {
@@ -242,16 +337,15 @@
             100% { transform: rotate(0deg); }
         }
 
-        /* --- Mobile Responsive Tweaks --- */
         @media (max-width: 768px) {
-            header {
-                flex-direction: column; align-items: stretch; padding: 16px; gap: 12px;
-            }
+            header { flex-direction: column; align-items: stretch; padding: 16px; gap: 12px; }
             .header-left { justify-content: center; }
             .control-panel { justify-content: center; width: 100%; }
             .control-panel input { width: 80px; }
-            .dashboard { grid-template-columns: 1fr; } 
+            .asset-panel { grid-template-columns: 1fr; gap: 16px; }
+            .dashboard-grid { grid-template-columns: 1fr; } 
             .perf-row { justify-content: space-between; }
+            .h-stats { flex-direction: column; gap: 8px; }
         }
     </style>
 </head>
@@ -266,12 +360,15 @@
             </div>
             <div class="title-group">
                 <h1>Wall Street <span>Pika</span></h1>
-                <div class="subtitle" id="global-status">Loading...</div>
+                <div class="subtitle">Mini Dashboard</div>
             </div>
         </div>
 
         <div class="control-panel">
-            <span class="version-tag">v1.9</span>
+            <span class="version-tag">v2.4</span>
+            <!-- Market Status Badge now in Control Panel with matching height -->
+            <div id="global-status"></div>
+            
             <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline">
                 📖 聖經
             </a>
@@ -280,32 +377,101 @@
         </div>
     </header>
 
-    <div class="ticker-container">
-        <div class="ticker-label">PIKA WISDOM</div>
-        <div class="ticker-content" id="ticker-content"></div>
+    <!-- NEW TABS -->
+    <div class="tabs">
+        <div class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</div>
+        <div class="tab-btn" onclick="switchTab('history')">History & Backup</div>
     </div>
 
-    <div class="dashboard" id="app"></div>
+    <!-- VIEW: DASHBOARD -->
+    <div id="view-dashboard" class="view-section active">
+        <!-- NEW ASSET PANEL -->
+        <div class="asset-panel">
+            <div class="ap-item">
+                <span class="ap-label">Total (HKD)</span>
+                <span class="ap-val" id="total-assets">HK$ --</span>
+                <span class="ap-sub">Rate: <span id="fx-rate">7.78</span> (USD/HKD)</span>
+            </div>
+            <div class="ap-item">
+                <span class="ap-label">Loan (HKD)</span>
+                <input type="number" id="loan-input" class="ap-input" placeholder="0" onchange="updateLoan(this.value)">
+            </div>
+            <div class="ap-item">
+                <span class="ap-label">Net Equity</span>
+                <span class="ap-val net-val" id="net-value">HK$ --</span>
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                    <span class="ap-sub" id="lev-display">Lev: --</span>
+                    <button class="snap-btn" onclick="takeSnapshot()">📷 Snap</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="ticker-container">
+            <div class="ticker-left-group">
+                <div class="ticker-label">PIKA WISDOM</div>
+                <button class="sound-btn" onclick="playPika()" title="Pika!">🔊</button>
+            </div>
+            <div class="ticker-content" id="ticker-content"></div>
+        </div>
+
+        <div class="dashboard-grid" id="app"></div>
+    </div>
+
+    <!-- VIEW: HISTORY -->
+    <div id="view-history" class="view-section">
+        <div class="data-tools">
+            <button class="btn btn-outline" onclick="exportData()">⬇️ Export Data</button>
+            <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆️ Import Data</button>
+            <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(this)">
+        </div>
+
+        <div class="history-list" id="history-container">
+            <!-- JS populated -->
+            <div style="text-align:center; color:#9ca3af; padding:40px;">No snapshots yet.</div>
+        </div>
+    </div>
 
     <div style="text-align: center; margin-top: 40px; margin-bottom: 20px; color: #9ca3af; font-size: 0.75rem;">
-        Wall Street Pika Risk Check Dashboard
+        Mini Dashboard
     </div>
 
     <script>
         const API_KEY = 'd62qgopr01qnpu82ah0gd62qgopr01qnpu82ah10';
+        const STORAGE_KEY = 'pika_stocks_v2_3'; 
         
-        /* --- 重要提示 / IMPORTANT NOTE ---
-           Google Sites Embed (iframe) 環境下，LocalStorage 會在每次刷新後被清除。
-           若要更改「永久預設股票」，請修改下方的 DEFAULT_STOCKS 列表。
-           
-           To change persistent default stocks, edit the list below directly.
-        */
+        // Default Config
         const DEFAULT_STOCKS = [
-            { symbol: 'KEN', beta: 1.5 }, 
-            { symbol: 'TSLA', beta: 2.4 }, 
-            { symbol: 'UPST', beta: 2.8 }
+            { symbol: 'KEN', beta: 1.5, shares: 0 }, 
+            { symbol: 'TSLA', beta: 2.4, shares: 0 }, 
+            { symbol: 'UPST', beta: 2.8, shares: 0 }
         ];
 
+        // State
+        let marketData = [];
+        let loanAmount = 0;
+        let usdHkdRate = 7.78; 
+        let snapshots = [];
+
+        // --- Pika Sound Logic ---
+        function playPika() {
+            if (!window.speechSynthesis) return;
+            
+            const speak = () => {
+                const u = new SpeechSynthesisUtterance("Pika Pika!");
+                u.pitch = 1.8; // High pitch for cuteness
+                u.rate = 1.4; // Fast speed
+                u.volume = 1;
+                // Try to find a fitting voice if possible, else default
+                window.speechSynthesis.speak(u);
+            };
+
+            // Play 3 times
+            speak();
+            setTimeout(speak, 800);
+            setTimeout(speak, 1600);
+        }
+
+        // --- Logic ---
         function initTicker() {
             const quotes = [
                 "能夠自由自地過著符合自己的熱忱和特質的人生，大概就是金錢可以買到的最大奢侈品。",
@@ -315,9 +481,7 @@
                 "最重要的是耐性，交易決策宜緩不宜急。"
             ];
             const el = document.getElementById('ticker-content');
-            if (el) {
-                el.innerHTML = quotes.map(q => `<span class="ticker-item">★ ${q}</span>`).join('');
-            }
+            if (el) el.innerHTML = quotes.map(q => `<span class="ticker-item">★ ${q}</span>`).join('');
         }
 
         function getNyDateString(dateObj) {
@@ -331,7 +495,6 @@
             const now = new Date();
             const nyTimeStr = now.toLocaleString("en-US", {timeZone: "America/New_York"});
             const nyTime = new Date(nyTimeStr);
-            
             const day = nyTime.getDay();
             const hour = nyTime.getHours();
             const min = nyTime.getMinutes();
@@ -347,60 +510,125 @@
         function updateGlobalStatus() {
             const state = getMarketState();
             const el = document.getElementById('global-status');
-            el.innerHTML = `<span class="market-badge ${state.color}">${state.label}</span>`;
+            if(el) el.innerHTML = `<span class="market-badge ${state.color}">${state.label}</span>`;
         }
-
-        let marketData = [];
 
         function generatePerfStats(volatility) {
             const v = volatility || 'High';
             const mult = (v === 'Extreme' ? 4 : 2);
             const r = () => (Math.random() * 10 - 4) * mult; 
-            return {
-                d7: r().toFixed(1),
-                d14: (r() * 1.5).toFixed(1),
-                d30: (r() * 2).toFixed(1)
-            };
+            return { d7: r().toFixed(1), d14: (r()*1.5).toFixed(1), d30: (r()*2).toFixed(1) };
         }
 
-        // --- Storage Logic (Attempt Best Effort) ---
-        const STORAGE_KEY = 'pika_stocks_v9'; // New key
+        // --- IMPORT / EXPORT FUNCTIONS ---
+        function exportData() {
+            const data = {
+                version: "2.3",
+                date: new Date().toISOString(),
+                stocks: marketData,
+                loan: loanAmount,
+                snapshots: snapshots
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pika_backup_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function importData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    // Basic validation
+                    if (data.stocks && Array.isArray(data.stocks)) {
+                        marketData = data.stocks;
+                        loanAmount = data.loan || 0;
+                        snapshots = data.snapshots || [];
+                        
+                        // Force refresh data fields
+                        marketData.forEach(s => {
+                            s.loading = true;
+                            if(!s.perf) s.perf = generatePerfStats('High');
+                        });
+                        
+                        saveData();
+                        render();
+                        renderHistory();
+                        document.getElementById('loan-input').value = loanAmount;
+                        fetchData(); // Fetch fresh prices
+                        alert('Data Imported Successfully!');
+                    } else {
+                        throw new Error("Invalid Format");
+                    }
+                } catch (err) {
+                    alert('Error: Invalid Backup File');
+                    console.error(err);
+                }
+            };
+            reader.readAsText(file);
+            input.value = ''; // Reset input
+        }
+
+        // --- Storage Engine (Tri-Force) ---
+        const SmartStorage = {
+            save: function(data, loan, snaps) {
+                const payload = {
+                    stocks: data.map(s => ({ 
+                        symbol: s.symbol, beta: s.beta || 1.2, perf: s.perf, shares: s.shares || 0 
+                    })),
+                    loan: loan || 0,
+                    snapshots: snaps || []
+                };
+                const json = JSON.stringify(payload);
+                try { localStorage.setItem(STORAGE_KEY, json); } catch(e){}
+                try { sessionStorage.setItem(STORAGE_KEY, json); } catch(e){}
+                try { window.name = json; } catch(e){}
+            },
+            load: function() {
+                let json = null;
+                try { json = localStorage.getItem(STORAGE_KEY); } catch(e){}
+                if(!json) try { json = sessionStorage.getItem(STORAGE_KEY); } catch(e){}
+                if(!json && window.name && window.name.startsWith('{')) {
+                    try { json = window.name; } catch(e){}
+                }
+                return json ? JSON.parse(json) : null;
+            }
+        };
 
         function loadStocks() {
-            let saved = null;
-            try { saved = localStorage.getItem(STORAGE_KEY); } catch(e){}
+            const saved = SmartStorage.load();
             
-            if (saved) {
-                try {
-                    marketData = JSON.parse(saved);
-                    // Integrity Check
-                    if (!Array.isArray(marketData) || marketData.length === 0) throw new Error("Empty");
-                    // Repair
-                    marketData.forEach(s => {
-                        if (!s.perf) s.perf = generatePerfStats('High');
-                        s.loading = true; 
-                    });
-                } catch(e) {
-                    marketData = JSON.parse(JSON.stringify(DEFAULT_STOCKS));
-                    marketData.forEach(s => { s.perf = generatePerfStats('High'); s.loading = true; });
-                }
+            if (saved && saved.stocks && Array.isArray(saved.stocks)) {
+                marketData = saved.stocks;
+                loanAmount = saved.loan || 0;
+                snapshots = saved.snapshots || [];
+                marketData.forEach(s => {
+                    if (!s.perf) s.perf = generatePerfStats('High');
+                    s.loading = true; 
+                });
             } else {
                 marketData = JSON.parse(JSON.stringify(DEFAULT_STOCKS));
                 marketData.forEach(s => { s.perf = generatePerfStats('High'); s.loading = true; });
+                loanAmount = 0;
+                snapshots = [];
             }
             
+            document.getElementById('loan-input').value = loanAmount;
             render();
             fetchData();
+            fetchFxRate(); 
         }
 
-        function saveStocks() {
-            // Clean data before save
-            const toSave = marketData.map(s => ({
-                symbol: s.symbol,
-                beta: s.beta || 1.2,
-                perf: s.perf 
-            }));
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch(e){}
+        function saveData() {
+            SmartStorage.save(marketData, loanAmount, snapshots);
+            calculateAssets();
         }
 
         function addNewStock() {
@@ -408,13 +636,10 @@
             const sym = input.value.trim().toUpperCase();
             if (!sym || marketData.find(s => s.symbol === sym)) return;
             const newStock = { 
-                symbol: sym, 
-                beta: 1.5, 
-                loading: true,
-                perf: generatePerfStats('Medium')
+                symbol: sym, beta: 1.5, loading: true, perf: generatePerfStats('Medium'), shares: 0
             };
             marketData.push(newStock);
-            saveStocks(); 
+            saveData();
             input.value = '';
             render();
             fetchSingle(newStock);
@@ -422,10 +647,167 @@
 
         function removeStock(sym) {
             marketData = marketData.filter(s => s.symbol !== sym);
-            saveStocks(); 
+            saveData();
             render();
         }
 
+        function updateShares(sym, val) {
+            const stock = marketData.find(s => s.symbol === sym);
+            if (stock) {
+                stock.shares = parseFloat(val) || 0;
+                saveData();
+                render(); 
+            }
+        }
+
+        function updateLoan(val) {
+            loanAmount = parseFloat(val) || 0;
+            saveData();
+        }
+
+        // --- FX & Asset Logic ---
+        async function fetchFxRate() {
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/USD');
+                const data = await res.json();
+                if (data && data.rates && data.rates.HKD) {
+                    usdHkdRate = data.rates.HKD;
+                    document.getElementById('fx-rate').innerText = usdHkdRate.toFixed(3);
+                    calculateAssets();
+                }
+            } catch(e) { console.log('FX Error, using default'); }
+        }
+
+        function calculateAssets() {
+            let totalUsd = 0;
+            marketData.forEach(s => {
+                const price = s.currentPrice || 0;
+                const qty = s.shares || 0;
+                totalUsd += price * qty;
+            });
+
+            const totalHkd = totalUsd * usdHkdRate;
+            const netHkd = totalHkd - loanAmount;
+            
+            let lev = 0;
+            if (netHkd > 0) {
+                lev = (totalHkd / netHkd);
+            } else if (totalHkd > 0) {
+                lev = 999; 
+            }
+
+            document.getElementById('total-assets').innerText = 'HK$ ' + Math.round(totalHkd).toLocaleString();
+            document.getElementById('net-value').innerText = 'HK$ ' + Math.round(netHkd).toLocaleString();
+            
+            const levStr = lev === 999 ? "Risk" : lev.toFixed(2) + "x";
+            const levEl = document.getElementById('lev-display');
+            levEl.innerText = "Lev: " + levStr;
+            
+            if(lev > 1.5) levEl.style.color = '#f87171'; 
+            else if(lev > 1.2) levEl.style.color = '#fbbf24'; 
+            else levEl.style.color = '#94a3b8'; 
+            
+            return { total: totalHkd, net: netHkd, lev: levStr };
+        }
+
+        // --- Snapshot Logic ---
+        function takeSnapshot() {
+            const now = new Date();
+            const timeStr = now.toLocaleString("zh-HK", { hour12: false });
+            const assets = calculateAssets();
+            
+            const snap = {
+                id: Date.now(),
+                time: timeStr,
+                net: Math.round(assets.net).toLocaleString(),
+                total: Math.round(assets.total).toLocaleString(),
+                loan: Math.round(loanAmount).toLocaleString(),
+                lev: assets.lev, 
+                details: marketData.map(s => ({
+                    sym: s.symbol,
+                    shares: s.shares || 0,
+                    price: s.currentPrice || 0
+                }))
+            };
+            
+            snapshots.unshift(snap); 
+            if(snapshots.length > 20) snapshots.pop(); 
+            saveData();
+            
+            if(document.getElementById('view-history').classList.contains('active')) {
+                renderHistory();
+            }
+            alert('Snapshot Saved!');
+        }
+
+        function deleteSnapshot(id) {
+            if(!confirm('Delete this record?')) return;
+            snapshots = snapshots.filter(s => s.id !== id);
+            saveData();
+            renderHistory();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`view-${tab}`).classList.add('active');
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            if(tab === 'dashboard') btns[0].classList.add('active');
+            else {
+                btns[1].classList.add('active');
+                renderHistory();
+            }
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('history-container');
+            if(snapshots.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#9ca3af; padding:40px;">No snapshots yet.</div>';
+                return;
+            }
+            
+            container.innerHTML = snapshots.map(s => `
+                <div class="history-card" onclick="this.classList.toggle('open')">
+                    <div class="h-time">${s.time}</div>
+                    <div class="h-stats">
+                        <div class="h-stat-item">
+                            <span class="h-label">Net Asset</span>
+                            <span class="h-val net">HK$ ${s.net}</span>
+                        </div>
+                        <div class="h-stat-item">
+                            <span class="h-label">Lev</span>
+                            <span class="h-val" style="font-size:0.9rem">${s.lev || '-'}</span>
+                        </div>
+                    </div>
+                    <div class="h-actions">
+                        <button class="toggle-btn">Details</button>
+                        <button class="del-hist-btn" onclick="event.stopPropagation(); deleteSnapshot(${s.id})">✕</button>
+                    </div>
+                    <div class="h-details" onclick="event.stopPropagation()">
+                        <div class="h-stock-row" style="font-weight:700; color:#6b7280;">
+                            <span>Stock</span><span>Price(USD)</span><span>Shares</span>
+                        </div>
+                        ${s.details.map(d => `
+                            <div class="h-stock-row">
+                                <span>${d.sym}</span>
+                                <span>$${d.price.toFixed(2)}</span>
+                                <span>${d.shares}</span>
+                            </div>
+                        `).join('')}
+                        <div class="h-stock-row" style="margin-top:8px; font-weight:700;">
+                            <span>Loan</span><span></span><span>- HK$ ${s.loan}</span>
+                        </div>
+                        <div class="h-stock-row" style="margin-top:4px; font-weight:700;">
+                            <span>Total Asset</span><span></span><span>HK$ ${s.total}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- Fetch Data ---
         async function fetchData() {
             updateGlobalStatus();
             for (let stock of marketData) {
@@ -467,6 +849,8 @@
 
                     let base = 50 + (stock.changePercent * 2);
                     stock.rsi = Math.min(Math.max(base + (Math.random()*4-2), 10), 90);
+                    
+                    calculateAssets(); 
                 }
             } catch (e) { console.error(e); }
             render();
@@ -480,7 +864,6 @@
             if (rsi > 75 || rsi < 25) score += 20;
             const absChg = Math.abs(stock.changePercent || 0);
             if (absChg > 5.0) score += 30; else if (absChg > 2.0) score += 15;
-            
             return Math.min(Math.max(Math.round(score), 5), 100);
         }
 
@@ -525,8 +908,13 @@
                 if(riskScore > 65) { riskColor = 'var(--risk-high)'; riskLabel = 'HIGH RISK'; }
 
                 const perf = stock.perf || { d7: 0, d14: 0, d30: 0 };
+                
+                const shares = stock.shares || 0;
+                const priceVal = stock.currentPrice || 0;
+                const holdingValUsd = shares * priceVal;
+                // FIX 1: Explicitly convert to HKD for display
+                const holdingValHkd = holdingValUsd * usdHkdRate;
 
-                // Pokeball Loader
                 const loadingHtml = stock.loading ? `
                     <div class="loader">
                         <div class="pokeball"></div>
@@ -547,6 +935,16 @@
                             <span class="price-val">$${p}</span>
                             <span class="price-change ${cClass}">${sign}${cp}%</span>
                             ${timeHtml}
+                        </div>
+                    </div>
+
+                    <div class="holdings-row">
+                        <div class="holdings-input-group">
+                            <span class="holdings-label">Shares</span>
+                            <input type="number" class="shares-input" value="${shares}" onchange="updateShares('${stock.symbol}', this.value)">
+                        </div>
+                        <div class="holdings-val">
+                            HK$ ${Math.round(holdingValHkd).toLocaleString()}
                         </div>
                     </div>
 

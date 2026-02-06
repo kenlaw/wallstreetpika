@@ -64,16 +64,13 @@
             max-width: 100%; max-height: 50vh; border-radius: 16px; 
             box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05);
             margin-bottom: 24px; 
-            /* Border removed */
         }
         
-        /* Updated: Dark Grey instead of Orange */
         .welcome-quote {
             font-size: 1.2rem; font-weight: 700; color: #374151; 
             margin-bottom: 10px;
         }
         
-        /* New Countdown Text Style (No Button) */
         .countdown-text {
             font-family: 'Roboto Mono', monospace;
             font-size: 0.9rem;
@@ -121,6 +118,17 @@
         .subtitle { 
             font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; margin-top: 4px; 
             display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+
+        /* New Profile Pic Style */
+        .profile-pic {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--pika-yellow);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-left: 4px;
         }
 
         .market-badge {
@@ -226,11 +234,7 @@
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
         .data-tools { max-width: 1200px; margin: 0 auto 20px auto; display: flex; gap: 10px; justify-content: flex-end; }
         .history-list { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-        
-        .history-card {
-            background: #fff; border-radius: 12px; padding: 16px 20px; border: 1px solid #e5e7eb;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow);
-        }
+        .history-card { background: #fff; border-radius: 12px; padding: 16px 20px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow); }
         .h-time { font-size: 0.8rem; color: #6b7280; font-weight: 600; min-width: 120px; }
         .h-stats { display: flex; gap: 20px; flex: 1; align-items: center; }
         .h-stat-item { display: flex; flex-direction: column; }
@@ -245,12 +249,7 @@
         .del-hist-btn { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.75rem; }
 
         /* Card */
-        .card {
-            background: var(--card-bg); border-radius: var(--radius); border: 1px solid #e5e7eb;
-            box-shadow: var(--shadow); transition: transform 0.2s; position: relative;
-            display: flex; flex-direction: column; overflow: visible; 
-            min-height: auto; 
-        }
+        .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid #e5e7eb; box-shadow: var(--shadow); transition: transform 0.2s; position: relative; display: flex; flex-direction: column; overflow: visible; min-height: auto; }
         .card-top { padding: 16px 20px 10px 20px; display: flex; justify-content: space-between; align-items: flex-start; }
         .stock-info h2 { margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
         .price-group { text-align: right; }
@@ -262,37 +261,20 @@
         .price-change { font-weight: 700; font-size: 0.9rem; display: block; margin-top: 2px;}
         .data-meta { display: flex; flex-direction: column; align-items: flex-end; margin-top: 4px; gap: 2px; }
         .data-time { font-size: 0.65rem; color: #9ca3af; font-family: 'Roboto Mono', monospace; }
-        .stale-badge {
-            background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5;
-            font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;
-            display: inline-flex; align-items: center; gap: 3px;
-        }
+        .stale-badge { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
 
-        .delete-btn {
-            position: absolute; top: -10px; right: -8px;
-            width: 24px; height: 24px; background: #fff; border-radius: 50%;
-            border: 1px solid #e5e7eb; color: #9ca3af; font-size: 0.9rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; z-index: 10;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        .delete-btn { position: absolute; top: -10px; right: -8px; width: 24px; height: 24px; background: #fff; border-radius: 50%; border: 1px solid #e5e7eb; color: #9ca3af; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .delete-btn:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; }
 
-        .holdings-row {
-            background: #f9fafb; padding: 10px 20px; border-top: 1px dashed #e5e7eb; 
-            display: flex; align-items: center; justify-content: space-between; gap: 10px;
-            border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);
-        }
+        .holdings-row { background: #f9fafb; padding: 10px 20px; border-top: 1px dashed #e5e7eb; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius); }
         .holdings-input-group { display: flex; align-items: center; gap: 6px; }
         .holdings-label { font-size: 0.7rem; font-weight: 700; color: #6b7280; text-transform: uppercase; }
-        
         .shares-input { width: 126px; padding: 4px 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid #d1d5db; }
-        
         .holdings-val { font-family: 'Roboto Mono', monospace; font-weight: 700; color: var(--text-primary); font-size: 0.9rem; }
 
         .perf-row { display: none; }
         .metrics { display: none; }
         .risk-box { display: none; }
-
         .text-up { color: var(--col-up); } .text-down { color: var(--col-down); } .text-flat { color: var(--col-flat); }
         
         .loader { position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; }
@@ -319,6 +301,7 @@
     <!-- Added onclick="manualEnter()" to enable clicking anywhere to enter -->
     <div id="welcome-screen" onclick="manualEnter()">
         <img src="welcome.jpg" alt="FAT FAT PIKA" class="welcome-img" onerror="this.style.display='none'">
+        <!-- FIX 1: Quote Removed as requested -->
         <!-- Replaced button with simple text countdown -->
         <div id="countdown-text" class="countdown-text">Entering in 8...</div>
     </div>
@@ -335,6 +318,8 @@
                 <h1>Wall Street <span>Pika</span></h1>
                 <div class="subtitle">Mini Stock Dashboard</div>
             </div>
+            <!-- Added Profile Pic -->
+            <img src="pikaprofile.png" alt="Profile" class="profile-pic" onerror="this.style.display='none'">
         </div>
 
         <div class="control-panel">
@@ -516,7 +501,7 @@
 
         function exportData() {
             const data = {
-                version: "3.5",
+                version: "3.7",
                 date: new Date().toISOString(),
                 stocks: marketData,
                 loan: loanAmount,

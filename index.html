@@ -56,7 +56,7 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 0.5s ease, visibility 0.5s;
             padding: 20px; text-align: center;
-            cursor: pointer; /* Indicates clickable */
+            cursor: pointer; 
         }
         #welcome-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
         
@@ -126,7 +126,6 @@
             height: 48px;
             border-radius: 50%;
             object-fit: cover;
-            /* Border removed */
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-left: 4px;
             zoom: 120%;
@@ -225,13 +224,14 @@
         
         .market-card {
             background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
-            padding: 10px 16px; min-width: 120px; flex-shrink: 0; position: relative; overflow: hidden;
+            padding: 10px 16px; min-width: 130px; flex-shrink: 0; position: relative; overflow: hidden;
             display: flex; flex-direction: column; box-shadow: var(--shadow);
             transition: transform 0.2s;
         }
         .market-card:hover { transform: translateY(-2px); border-color: var(--pika-yellow); }
-        .mc-name { font-size: 0.7rem; font-weight: 700; color: #6b7280; text-transform: uppercase; }
-        .mc-price { font-family: 'Roboto Mono', monospace; font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-top: 2px;}
+        .mc-name { font-size: 0.75rem; font-weight: 800; color: #1f2937; }
+        .mc-sub { font-size: 0.6rem; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+        .mc-price { font-family: 'Roboto Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--text-primary); }
         .mc-change { font-size: 0.75rem; font-weight: 700; margin-top: 2px; }
 
         .ticker-container {
@@ -306,7 +306,7 @@
         .pokeball::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; background: #fff; border: 3px solid #333; border-radius: 50%; z-index: 2; }
         .loading-text { font-size: 0.7rem; font-weight: 700; color: #6b7280; margin-top: 8px; }
         
-        /* NEW: Mini Pokeball Loader for Market Overview */
+        /* Mini Pokeball Loader for Market Overview */
         .mini-loader {
             position: absolute; inset: 0; background: rgba(255,255,255,0.9);
             display: flex; justify-content: center; align-items: center; z-index: 10;
@@ -449,15 +449,17 @@
             { symbol: 'UPST', beta: 2.8, shares: 0 }
         ];
 
-        // Market Overview Symbols
+        // Market Overview Symbols (Using ETFs for reliability on Free Tier)
         const MARKET_SYMBOLS = [
             { s: 'BINANCE:BTCUSDT', n: 'BTC' },
-            { s: 'USO', n: 'Oil' },
-            { s: 'GLD', n: 'Gold' },
-            { s: 'IEF', n: '10Y Bond' }, 
-            { s: 'DIA', n: 'Dow' },
-            { s: 'QQQ', n: 'Nasdaq' },
-            { s: 'SPY', n: 'S&P 500' }
+            { s: 'BINANCE:ETHUSDT', n: 'ETH' },
+            { s: 'USO', n: 'Oil ETF' },    // ETF Proxy
+            { s: 'GLD', n: 'Gold ETF' },   // ETF Proxy
+            { s: 'IEF', n: '10Y Bond ETF' }, // ETF Proxy
+            { s: 'DIA', n: 'Dow ETF' },     // ETF Proxy
+            { s: 'QQQ', n: 'Nas ETF' },     // ETF Proxy
+            { s: 'SPY', n: 'S&P ETF' },     // ETF Proxy
+            { s: 'UUP', n: 'USD ETF' }      // ETF Proxy
         ];
         let marketOverviewData = {}; 
 
@@ -547,7 +549,7 @@
 
         function exportData() {
             const data = {
-                version: "4.1",
+                version: "4.3",
                 date: new Date().toISOString(),
                 stocks: marketData,
                 loan: loanAmount,
@@ -661,7 +663,7 @@
 
             updatePrivacyUI();
             render();
-            // Initialize Market Overview placeholders
+            // Initialize Market Overview
             MARKET_SYMBOLS.forEach(m => { marketOverviewData[m.s] = { price: 0, change: 0 }; });
             renderMarketOverview();
             
@@ -698,8 +700,7 @@
                 saveData();
                 input.value = '';
                 render();
-                // We add to queue via refillQueue called next cycle, or manually fetch
-                fetchQueue.unshift(newStock); // Prioritize new stock
+                fetchQueue.unshift(newStock); 
                 
             } catch(e) {
                 alert("Error validating stock");
@@ -746,13 +747,9 @@
             refreshInterval = parseInt(val);
             saveData(); 
             if (userIntervalTimer) clearInterval(userIntervalTimer);
-            
-            // Set next Fetch Target Time for visual countdown
             if (refreshInterval > 0) {
                 nextFetchTime = Date.now() + refreshInterval;
                 userIntervalTimer = setInterval(refillQueue, refreshInterval);
-                // Trigger refil immediately? No, wait for cycle.
-                // Or maybe trigger once now.
                 refillQueue(); 
             } else {
                 nextFetchTime = 0;
@@ -764,19 +761,16 @@
             if (queueProcessorTimer) clearInterval(queueProcessorTimer);
             queueProcessorTimer = setInterval(processQueue, 1500);
             
-            // Start Visual Timer updater
             if (statusUpdateTimer) clearInterval(statusUpdateTimer);
             statusUpdateTimer = setInterval(updateStatusUI, 1000);
 
             changeRefreshRate(refreshInterval);
         }
 
-        // FIX 5: Visual Countdown Logic
         function updateStatusUI() {
             const el = document.getElementById('api-status-top');
             if (!el) return;
 
-            // If processing
             if (fetchQueue.length > 0) {
                 el.innerText = `Processing (${fetchQueue.length})`;
                 el.classList.add('active');
@@ -800,15 +794,12 @@
         }
 
         function refillQueue() {
-            // Add user stocks
             marketData.forEach(stock => {
                 if (!fetchQueue.find(item => item.symbol === stock.symbol)) {
                     fetchQueue.push(stock);
                 }
             });
-            // Add Market Indices (Wrapped in objects to fit queue)
             MARKET_SYMBOLS.forEach(m => {
-                // Check if already in queue (using a property to identify)
                 if (!fetchQueue.find(item => item.isMarketIndex && item.symbol === m.s)) {
                     fetchQueue.push({ symbol: m.s, isMarketIndex: true, name: m.n });
                 }
@@ -839,8 +830,6 @@
         async function fetchSingle(item) {
             try {
                 const bust = Date.now();
-                // Special handling for crypto symbols vs stock symbols if needed, but Finnhub quote works for both usually
-                // Note: For crypto symbols like BINANCE:BTCUSDT, use the quote endpoint as well.
                 const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${item.symbol}&token=${API_KEY}&_=${bust}`);
                 
                 if (res.status === 429) {
@@ -850,20 +839,21 @@
                 }
                 const data = await res.json();
 
-                // If it's a Market Index Item
                 if (item.isMarketIndex) {
                     if (data.c) {
                         let change = 0;
                         if (data.pc > 0) change = ((data.c - data.pc) / data.pc) * 100;
                         else change = data.dp;
                         marketOverviewData[item.symbol] = { price: data.c, change: change };
-                        renderMarketOverview();
+                    } else {
+                        // FIX: Handle empty data for indices to stop loading spinner
+                        marketOverviewData[item.symbol] = { price: 0, change: 0, error: true };
                     }
+                    renderMarketOverview();
                     return;
                 }
 
-                // Normal Stock Item
-                const stock = item; // It's a reference to the object in marketData
+                const stock = item; 
                 if (data.c) {
                     const prevPrice = stock.currentPrice; 
                     stock.prevClose = data.pc; 
@@ -907,7 +897,14 @@
                     
                     render();
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error(e);
+                // FIX: Stop loading even on error
+                if(!item.isMarketIndex) {
+                    item.loading = false;
+                    render();
+                }
+            }
         }
 
         function calculateRisk(stock) {
@@ -1069,14 +1066,14 @@
             `).join('');
         }
 
-        // Updated Render Market Overview with Mini Pokeball Logic
         function renderMarketOverview() {
             const el = document.getElementById('market-overview');
             if (!el) return;
             el.innerHTML = MARKET_SYMBOLS.map(m => {
                 const d = marketOverviewData[m.s];
-                // If price is 0 or undefined, assume loading
-                const isLoading = !d || d.price === 0;
+                // Check if loading or error
+                const isLoading = !d;
+                const isError = d && d.error;
                 
                 let content = '';
                 if (isLoading) {
@@ -1087,6 +1084,12 @@
                         <span class="mc-name">${m.n}</span>
                         <span class="mc-price" style="opacity:0">--</span>
                         <span class="mc-change" style="opacity:0">--</span>
+                    `;
+                } else if (isError) {
+                    content = `
+                        <span class="mc-name">${m.n}</span>
+                        <span class="mc-price" style="color:#9ca3af">-</span>
+                        <span class="mc-change" style="color:#9ca3af">-</span>
                     `;
                 } else {
                     const p = d.price;

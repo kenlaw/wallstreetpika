@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wallstreet Pika Risk Check Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Roboto+Mono:wght@500;700&display=swap');
+
+        :root {
+            /* Theme Colors */
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --pika-yellow: #facc15;
+            --pika-gold: #eab308;
+            --pika-accent: #fef9c3;
+            
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            
+            /* Status */
+            --col-up: #10b981;
+            --col-down: #ef4444;
+            --col-flat: #9ca3af;
+            
+            /* Risk */
+            --risk-low: #10b981;
+            --risk-med: #f59e0b;
+            --risk-high: #ef4444;
+            
+            /* Sentiment */
+            --sent-bull: #ecfdf5; --sent-bull-text: #047857;
+            --sent-bear: #fef2f2; --sent-bear-text: #b91c1c;
+            --sent-neut: #f3f4f6; --sent-neut-text: #4b5563;
+
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --radius: 16px;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html {
+            min-height: 100%;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 24px 24px;
+            overflow-y: auto; 
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 16px;
+            /* 預留極大底部空間，防止 iframe 裁切 */
+            padding-bottom: 200px; 
+            min-height: 100%;
+            background: transparent;
+        }
+
+        /* --- Header --- */
+        header {
+            max-width: 1200px;
+            margin: 0 auto 24px auto;
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            border: 1px solid #e5e7eb;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--pika-yellow);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        
+        .logo-box {
+            width: 48px; height: 48px; background: var(--pika-accent);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            color: var(--pika-gold); flex-shrink: 0;
+        }
+        .logo-box svg { width: 28px; height: 28px; filter: drop-shadow(0 2px 2px rgba(234, 179, 8, 0.2)); }
+        
+        .title-group h1 { 
+            margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--text-primary); line-height: 1.1; 
+        }
+        .title-group h1 span { color: var(--pika-gold); }
+        
+        .subtitle { 
+            font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; margin-top: 4px; 
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+
+        /* Market Badge */
+        .market-badge {
+            font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; white-space: nowrap;
+        }
+        .market-badge.open { background: #dcfce7; color: #15803d; }
+        .market-badge.pre { background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
+        .market-badge.post { background: #f3e8ff; color: #7e22ce; }
+        .market-badge.closed { background: #f3f4f6; color: #6b7280; }
+
+        /* Controls */
+        .control-panel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        
+        .version-tag {
+            font-family: 'Roboto Mono', monospace; font-size: 0.85rem; color: #9ca3af; 
+            background: #f9fafb; padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-weight: 700;
+        }
+
+        input[type="text"] {
+            background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 12px;
+            border-radius: 8px; font-size: 0.9rem; width: 90px; font-weight: 700;
+            text-transform: uppercase; text-align: center; outline: none;
+        }
+        input[type="text"]:focus { border-color: var(--pika-yellow); background: #fff; }
+
+        .btn {
+            border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;
+            font-weight: 700; font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; gap: 4px; white-space: nowrap;
+        }
+        .btn-primary { background: var(--pika-yellow); color: #422006; }
+        .btn-primary:hover { background: #fcd34d; }
+        .btn-outline { background: white; border: 1px solid #d1d5db; color: var(--text-secondary); }
+
+        /* --- Ticker --- */
+        .ticker-container {
+            max-width: 1200px; margin: 0 auto 24px auto; background: #fff; border-radius: 50px;
+            padding: 4px; box-shadow: var(--shadow); border: 1px solid #e5e7eb;
+            height: 40px; display: flex; align-items: center; overflow: hidden;
+        }
+        .ticker-label {
+            background: var(--pika-yellow); color: #422006; font-size: 0.7rem; font-weight: 800;
+            padding: 0 12px; height: 30px; border-radius: 40px; display: flex; align-items: center;
+            margin-right: 8px; flex-shrink: 0; z-index: 2;
+        }
+        .ticker-content { white-space: nowrap; animation: marquee 120s linear infinite; }
+        .ticker-item { display: inline-block; margin-right: 30px; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        /* --- Dashboard Grid --- */
+        .dashboard {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px;
+            max-width: 1200px; margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg); border-radius: var(--radius); border: 1px solid #e5e7eb;
+            box-shadow: var(--shadow); transition: transform 0.2s; position: relative;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        
+        .card-top {
+            padding: 16px 20px 12px 20px; display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        
+        .stock-info h2 { margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
+        
+        .price-group { text-align: right; }
+        .price-val { font-family: 'Roboto Mono', monospace; font-size: 1.5rem; font-weight: 700; display: block; line-height: 1.1;}
+        .price-change { font-weight: 700; font-size: 0.9rem; display: block; margin-top: 2px;}
+        
+        .data-meta { display: flex; flex-direction: column; align-items: flex-end; margin-top: 4px; gap: 2px; }
+        .data-time { font-size: 0.65rem; color: #9ca3af; font-family: 'Roboto Mono', monospace; }
+        
+        .stale-badge {
+            background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5;
+            font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 3px;
+        }
+
+        .delete-btn {
+            position: absolute; top: 12px; right: 12px;
+            width: 24px; height: 24px; background: #f3f4f6; border-radius: 50%;
+            border: none; color: #9ca3af; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; z-index: 10;
+        }
+        .delete-btn:hover { background: #fee2e2; color: #ef4444; }
+
+        /* --- Performance Stats --- */
+        .perf-row {
+            display: flex; justify-content: flex-start; gap: 12px;
+            padding: 0 20px 12px 20px; border-bottom: 1px dashed #f3f4f6;
+        }
+        .perf-item { font-size: 0.7rem; color: var(--text-secondary); font-family: 'Roboto Mono', monospace; font-weight: 500; }
+        .perf-val { font-weight: 700; margin-left: 2px; }
+
+        /* --- Risk Bar --- */
+        .risk-box { margin: 12px 20px 16px 20px; padding: 12px; border-radius: 12px; background: #f9fafb; border: 1px solid #f3f4f6; }
+        .risk-header { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; }
+        .progress-bg { height: 6px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+        /* Metrics */
+        .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid #e5e7eb; background: #fafafa; margin-top: auto; }
+        .metric { padding: 10px; text-align: center; border-right: 1px solid #e5e7eb; }
+        .metric:last-child { border-right: none; }
+        .m-label { font-size: 0.65rem; color: #9ca3af; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
+        .m-val { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); font-family: 'Roboto Mono', monospace; }
+
+        /* Utils */
+        .text-up { color: var(--col-up); } .text-down { color: var(--col-down); } .text-flat { color: var(--col-flat); }
+        
+        /* --- Pokeball Loader --- */
+        .loader { 
+            position: absolute; inset: 0; background: rgba(255,255,255,0.9); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; 
+        }
+        
+        .pokeball {
+            width: 40px; height: 40px; background: #fff;
+            border: 3px solid #333; border-radius: 50%;
+            position: relative; overflow: hidden;
+            animation: shake 1.5s infinite ease-in-out;
+        }
+        .pokeball::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background: #ef4444; border-bottom: 3px solid #333;
+        }
+        .pokeball::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 12px; height: 12px; background: #fff; border: 3px solid #333; border-radius: 50%; z-index: 2;
+        }
+        
+        .loading-text { font-size: 0.7rem; font-weight: 700; color: #6b7280; margin-top: 8px; }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            20% { transform: rotate(-10deg); }
+            40% { transform: rotate(10deg); }
+            60% { transform: rotate(-10deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* --- Mobile Responsive Tweaks --- */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column; align-items: stretch; padding: 16px; gap: 12px;
+            }
+            .header-left { justify-content: center; }
+            .control-panel { justify-content: center; width: 100%; }
+            .control-panel input { width: 80px; }
+            .dashboard { grid-template-columns: 1fr; } 
+            .perf-row { justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <div class="logo-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+            </div>
+            <div class="title-group">
+                <h1>Wall Street <span>Pika</span></h1>
+                <div class="subtitle" id="global-status">Loading...</div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <span class="version-tag">v1.9</span>
+            <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline">
+                📖 聖經
+            </a>
+            <input type="text" id="new-stock-input" placeholder="NVDA" maxlength="5">
+            <button class="btn btn-primary" onclick="addNewStock()">+</button>
+        </div>
+    </header>
+
+    <div class="ticker-container">
+        <div class="ticker-label">PIKA WISDOM</div>
+        <div class="ticker-content" id="ticker-content"></div>
+    </div>
+
+    <div class="dashboard" id="app"></div>
+
+    <div style="text-align: center; margin-top: 40px; margin-bottom: 20px; color: #9ca3af; font-size: 0.75rem;">
+        Wall Street Pika Risk Check Dashboard
+    </div>
+
+    <script>
+        const API_KEY = 'd62qgopr01qnpu82ah0gd62qgopr01qnpu82ah10';
+        
+        /* --- 重要提示 / IMPORTANT NOTE ---
+           Google Sites Embed (iframe) 環境下，LocalStorage 會在每次刷新後被清除。
+           若要更改「永久預設股票」，請修改下方的 DEFAULT_STOCKS 列表。
+           
+           To change persistent default stocks, edit the list below directly.
+        */
+        const DEFAULT_STOCKS = [
+            { symbol: 'KEN', beta: 1.5 }, 
+            { symbol: 'TSLA', beta: 2.4 }, 
+            { symbol: 'UPST', beta: 2.8 }
+        ];
+
+        function initTicker() {
+            const quotes = [
+                "能夠自由自地過著符合自己的熱忱和特質的人生，大概就是金錢可以買到的最大奢侈品。",
+                "一輩子抓著幾個機會，迅速行動，去做簡單又合乎邏輯的事情，就能得到很大的財富。",
+                "賺錢是為了更好的生活，我們卻在賺錢的過程中錯過了生活",
+                "短期內市場是投票機，長期來是一台稱重機",
+                "最重要的是耐性，交易決策宜緩不宜急。"
+            ];
+            const el = document.getElementById('ticker-content');
+            if (el) {
+                el.innerHTML = quotes.map(q => `<span class="ticker-item">★ ${q}</span>`).join('');
+            }
+        }
+
+        function getNyDateString(dateObj) {
+            return new Intl.DateTimeFormat('en-US', { 
+                timeZone: 'America/New_York', 
+                year: 'numeric', month: 'numeric', day: 'numeric' 
+            }).format(dateObj);
+        }
+
+        function getMarketState() {
+            const now = new Date();
+            const nyTimeStr = now.toLocaleString("en-US", {timeZone: "America/New_York"});
+            const nyTime = new Date(nyTimeStr);
+            
+            const day = nyTime.getDay();
+            const hour = nyTime.getHours();
+            const min = nyTime.getMinutes();
+            const timeVal = hour + min/60;
+
+            if (day === 0 || day === 6) return { code: 'CLOSED', label: 'MARKET CLOSED', color: 'closed' };
+            if (timeVal >= 4 && timeVal < 9.5) return { code: 'PRE', label: 'PRE-MARKET', color: 'pre' };
+            if (timeVal >= 9.5 && timeVal < 16) return { code: 'OPEN', label: 'MARKET OPEN', color: 'open' };
+            if (timeVal >= 16 && timeVal < 20) return { code: 'POST', label: 'POST-MARKET', color: 'post' };
+            return { code: 'CLOSED', label: 'MARKET CLOSED', color: 'closed' };
+        }
+
+        function updateGlobalStatus() {
+            const state = getMarketState();
+            const el = document.getElementById('global-status');
+            el.innerHTML = `<span class="market-badge ${state.color}">${state.label}</span>`;
+        }
+
+        let marketData = [];
+
+        function generatePerfStats(volatility) {
+            const v = volatility || 'High';
+            const mult = (v === 'Extreme' ? 4 : 2);
+            const r = () => (Math.random() * 10 - 4) * mult; 
+            return {
+                d7: r().toFixed(1),
+                d14: (r() * 1.5).toFixed(1),
+                d30: (r() * 2).toFixed(1)
+            };
+        }
+
+        // --- Storage Logic (Attempt Best Effort) ---
+        const STORAGE_KEY = 'pika_stocks_v9'; // New key
+
+        function loadStocks() {
+            let saved = null;
+            try { saved = localStorage.getItem(STORAGE_KEY); } catch(e){}
+            
+            if (saved) {
+                try {
+                    marketData = JSON.parse(saved);
+                    // Integrity Check
+                    if (!Array.isArray(marketData) || marketData.length === 0) throw new Error("Empty");
+                    // Repair
+                    marketData.forEach(s => {
+                        if (!s.perf) s.perf = generatePerfStats('High');
+                        s.loading = true; 
+                    });
+                } catch(e) {
+                    marketData = JSON.parse(JSON.stringify(DEFAULT_STOCKS));
+                    marketData.forEach(s => { s.perf = generatePerfStats('High'); s.loading = true; });
+                }
+            } else {
+                marketData = JSON.parse(JSON.stringify(DEFAULT_STOCKS));
+                marketData.forEach(s => { s.perf = generatePerfStats('High'); s.loading = true; });
+            }
+            
+            render();
+            fetchData();
+        }
+
+        function saveStocks() {
+            // Clean data before save
+            const toSave = marketData.map(s => ({
+                symbol: s.symbol,
+                beta: s.beta || 1.2,
+                perf: s.perf 
+            }));
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch(e){}
+        }
+
+        function addNewStock() {
+            const input = document.getElementById('new-stock-input');
+            const sym = input.value.trim().toUpperCase();
+            if (!sym || marketData.find(s => s.symbol === sym)) return;
+            const newStock = { 
+                symbol: sym, 
+                beta: 1.5, 
+                loading: true,
+                perf: generatePerfStats('Medium')
+            };
+            marketData.push(newStock);
+            saveStocks(); 
+            input.value = '';
+            render();
+            fetchSingle(newStock);
+        }
+
+        function removeStock(sym) {
+            marketData = marketData.filter(s => s.symbol !== sym);
+            saveStocks(); 
+            render();
+        }
+
+        async function fetchData() {
+            updateGlobalStatus();
+            for (let stock of marketData) {
+                fetchSingle(stock);
+                await new Promise(r => setTimeout(r, 400));
+            }
+        }
+
+        async function fetchSingle(stock) {
+            try {
+                const bust = Date.now();
+                const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${API_KEY}&_=${bust}`);
+                const data = await res.json();
+
+                if (data.c) {
+                    stock.prevClose = data.pc; 
+                    stock.lastUpdate = data.t;
+                    stock.loading = false;
+
+                    const todayNyStr = getNyDateString(new Date()); 
+                    const dataNyStr = getNyDateString(new Date(data.t * 1000));
+                    stock.isStale = (dataNyStr !== todayNyStr);
+
+                    if (stock.isStale) {
+                        stock.currentPrice = data.c; 
+                        stock.changePercent = data.dp; 
+                    } else {
+                        stock.currentPrice = data.c;
+                        if (data.pc > 0) {
+                            stock.changePercent = ((data.c - data.pc) / data.pc) * 100;
+                        } else {
+                            stock.changePercent = data.dp;
+                        }
+                    }
+
+                    if(stock.perf) {
+                        stock.perf.d7 = (parseFloat(stock.perf.d7) + stock.changePercent * 0.05).toFixed(1);
+                    }
+
+                    let base = 50 + (stock.changePercent * 2);
+                    stock.rsi = Math.min(Math.max(base + (Math.random()*4-2), 10), 90);
+                }
+            } catch (e) { console.error(e); }
+            render();
+        }
+
+        function calculateRisk(stock) {
+            let score = 0;
+            const beta = stock.beta || 1.2;
+            if (beta > 2.0) score += 30; else if (beta > 1.5) score += 20; else score += 10;
+            const rsi = stock.rsi || 50;
+            if (rsi > 75 || rsi < 25) score += 20;
+            const absChg = Math.abs(stock.changePercent || 0);
+            if (absChg > 5.0) score += 30; else if (absChg > 2.0) score += 15;
+            
+            return Math.min(Math.max(Math.round(score), 5), 100);
+        }
+
+        function getSign(val) { return parseFloat(val) > 0 ? '+' : ''; }
+        function getColor(val) { return parseFloat(val) >= 0 ? 'text-up' : 'text-down'; }
+
+        function render() {
+            const container = document.getElementById('app');
+            const state = getMarketState();
+
+            container.innerHTML = marketData.map(stock => {
+                const p = stock.currentPrice ? stock.currentPrice.toFixed(2) : '--';
+                const cp = stock.changePercent ? stock.changePercent.toFixed(2) : '0.00';
+                
+                let cClass = stock.changePercent >= 0 ? 'text-up' : 'text-down';
+                if (stock.isStale) cClass = 'text-flat'; 
+                
+                const sign = stock.changePercent >= 0 ? '+' : '';
+                
+                let timeDisplay = '--:--';
+                if (stock.lastUpdate) {
+                    timeDisplay = new Date(stock.lastUpdate * 1000).toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit'});
+                }
+                
+                let timeHtml = `<div class="data-meta"><span class="data-time">Update: ${timeDisplay} ET</span></div>`;
+                if (stock.isStale) {
+                    if (state.code !== 'CLOSED') {
+                        timeHtml = `
+                        <div class="data-meta">
+                            <span class="stale-badge">⚠️ Waiting for trade</span>
+                            <span class="data-time">Last: ${timeDisplay}</span>
+                        </div>`;
+                    } else {
+                        timeHtml = `<div class="data-meta"><span class="data-time">Closed: ${timeDisplay}</span></div>`;
+                    }
+                }
+
+                let riskScore = calculateRisk(stock);
+                let riskColor = 'var(--risk-med)';
+                let riskLabel = 'HOLD';
+                if(riskScore < 35) { riskColor = 'var(--risk-low)'; riskLabel = 'SAFE'; }
+                if(riskScore > 65) { riskColor = 'var(--risk-high)'; riskLabel = 'HIGH RISK'; }
+
+                const perf = stock.perf || { d7: 0, d14: 0, d30: 0 };
+
+                // Pokeball Loader
+                const loadingHtml = stock.loading ? `
+                    <div class="loader">
+                        <div class="pokeball"></div>
+                        <div class="loading-text">載入中...</div>
+                    </div>` : '';
+
+                return `
+                <div class="card">
+                    ${loadingHtml}
+                    <button class="delete-btn" onclick="removeStock('${stock.symbol}')">✕</button>
+                    
+                    <div class="card-top">
+                        <div class="stock-info">
+                            <span class="market-tag ${state.color}">${state.code}</span>
+                            <h2>${stock.symbol}</h2>
+                        </div>
+                        <div class="price-group">
+                            <span class="price-val">$${p}</span>
+                            <span class="price-change ${cClass}">${sign}${cp}%</span>
+                            ${timeHtml}
+                        </div>
+                    </div>
+
+                    <div class="perf-row">
+                        <div class="perf-item">7D: <span class="perf-val ${getColor(perf.d7)}">${getSign(perf.d7)}${perf.d7}%</span></div>
+                        <div class="perf-item">14D: <span class="perf-val ${getColor(perf.d14)}">${getSign(perf.d14)}${perf.d14}%</span></div>
+                        <div class="perf-item">30D: <span class="perf-val ${getColor(perf.d30)}">${getSign(perf.d30)}${perf.d30}%</span></div>
+                    </div>
+
+                    <div class="risk-box">
+                        <div class="risk-header">
+                            <span>Risk Score</span>
+                            <span style="color:${riskColor}">${riskScore} / 100</span>
+                        </div>
+                        <div class="progress-bg">
+                            <div class="progress-fill" style="width:${riskScore}%; background:${riskColor}"></div>
+                        </div>
+                    </div>
+
+                    <div class="metrics">
+                        <div class="metric">
+                            <span class="m-label">RSI</span>
+                            <span class="m-val">${stock.rsi ? stock.rsi.toFixed(0) : '--'}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="m-label">Beta</span>
+                            <span class="m-val">${stock.beta || 1.2}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="m-label">Verdict</span>
+                            <span class="m-val" style="color:${riskColor}; font-size:0.8rem">${riskLabel}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        initTicker();
+        loadStocks();
+        setInterval(fetchData, 20000);
+        setInterval(updateGlobalStatus, 60000);
+
+    </script>
+</body>
+</html>

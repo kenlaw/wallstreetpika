@@ -66,11 +66,6 @@
             margin-bottom: 24px; 
         }
         
-        .welcome-quote {
-            font-size: 1.2rem; font-weight: 700; color: #374151; 
-            margin-bottom: 10px;
-        }
-        
         .countdown-text {
             font-family: 'Roboto Mono', monospace;
             font-size: 0.9rem;
@@ -146,27 +141,38 @@
 
         .control-panel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
+        /* Updated Info Group for Version & Status (Stacked) */
+        .info-group {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 6px;
+        }
+
+        .version-tag {
+            font-family: 'Roboto Mono', monospace; font-size: 0.75rem; color: #9ca3af; 
+            background: #f9fafb; padding: 2px 6px; border-radius: 4px; border: 1px solid #e5e7eb; font-weight: 700;
+            line-height: 1; margin-bottom: 2px;
+        }
+        
+        /* New API Status Text Style (Subtle) */
+        .api-status-text {
+            font-family: 'Roboto Mono', monospace; font-size: 0.6rem; 
+            color: #cbd5e1; /* Very light grey */
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        /* Active Processing State */
+        .api-status-text.active { 
+            color: #d97706; /* Dark Yellow/Orange */
+            font-weight: 700;
+        }
+
         select.refresh-select {
             background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 12px;
             border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: #4b5563;
             outline: none; cursor: pointer;
         }
         select.refresh-select:focus { border-color: var(--pika-yellow); }
-
-        .version-tag {
-            font-family: 'Roboto Mono', monospace; font-size: 0.85rem; color: #9ca3af; 
-            background: #f9fafb; padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-weight: 700;
-            line-height: 1.2;
-        }
-        
-        /* API Status Tag Styling */
-        .api-tag {
-            font-family: 'Roboto Mono', monospace; font-size: 0.75rem; color: #fff; 
-            background: #6b7280; padding: 6px 10px; border-radius: 8px; font-weight: 600;
-            line-height: 1.5; min-width: 80px; text-align: center;
-        }
-        .api-tag.active { background: #f59e0b; color: #fff; animation: pulse-api 1s infinite; }
-        @keyframes pulse-api { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
         input[type="text"], input[type="number"] {
             background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 12px;
@@ -233,6 +239,27 @@
         .mc-sub { font-size: 0.6rem; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
         .mc-price { font-family: 'Roboto Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--text-primary); }
         .mc-change { font-size: 0.75rem; font-weight: 700; margin-top: 2px; }
+
+        /* Mini Pokeball Loader */
+        .mini-loader {
+            position: absolute; inset: 0; background: rgba(255,255,255,0.9);
+            display: flex; justify-content: center; align-items: center; z-index: 10;
+            border-radius: 12px;
+        }
+        .mini-pokeball {
+            width: 20px; height: 20px; background: #fff;
+            border: 2px solid #333; border-radius: 50%;
+            position: relative; overflow: hidden;
+            animation: shake 1.5s infinite ease-in-out;
+        }
+        .mini-pokeball::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background: #ef4444; border-bottom: 2px solid #333;
+        }
+        .mini-pokeball::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: #fff; border: 2px solid #333; border-radius: 50%; z-index: 2;
+        }
 
         .ticker-container {
             max-width: 1200px; margin: 0 auto 24px auto; background: #fff; border-radius: 50px;
@@ -305,28 +332,6 @@
         .pokeball::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: #ef4444; border-bottom: 3px solid #333; }
         .pokeball::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; background: #fff; border: 3px solid #333; border-radius: 50%; z-index: 2; }
         .loading-text { font-size: 0.7rem; font-weight: 700; color: #6b7280; margin-top: 8px; }
-        
-        /* Mini Pokeball Loader for Market Overview */
-        .mini-loader {
-            position: absolute; inset: 0; background: rgba(255,255,255,0.9);
-            display: flex; justify-content: center; align-items: center; z-index: 10;
-            border-radius: 12px;
-        }
-        .mini-pokeball {
-            width: 20px; height: 20px; background: #fff;
-            border: 2px solid #333; border-radius: 50%;
-            position: relative; overflow: hidden;
-            animation: shake 1.5s infinite ease-in-out;
-        }
-        .mini-pokeball::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
-            background: #ef4444; border-bottom: 2px solid #333;
-        }
-        .mini-pokeball::after {
-            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 6px; height: 6px; background: #fff; border: 2px solid #333; border-radius: 50%; z-index: 2;
-        }
-
         @keyframes shake { 0% { transform: rotate(0deg); } 20% { transform: rotate(-10deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-10deg); } 100% { transform: rotate(0deg); } }
 
         @media (max-width: 768px) {
@@ -363,7 +368,11 @@
         </div>
 
         <div class="control-panel">
-            <span id="api-status-top" class="api-tag">Idle</span>
+            <!-- FIX: Stacked Info Group -->
+            <div class="info-group">
+                <span class="version-tag">v4.5</span>
+                <span id="api-status-top" class="api-status-text">Idle</span>
+            </div>
             
             <div id="global-status"></div>
             <select class="refresh-select" id="refresh-rate" onchange="changeRefreshRate(this.value)">
@@ -432,7 +441,7 @@
     </div>
 
     <div style="text-align: center; margin-top: 40px; margin-bottom: 20px; color: #9ca3af; font-size: 0.7rem;">
-        Mini Stock Dashboard <span id="api-status">| API: Idle</span>
+        Mini Stock Dashboard
     </div>
 
     <script>
@@ -549,7 +558,7 @@
 
         function exportData() {
             const data = {
-                version: "4.3",
+                version: "4.5",
                 date: new Date().toISOString(),
                 stocks: marketData,
                 loan: loanAmount,
@@ -822,9 +831,7 @@
         }
 
         function updateStatus(msg) {
-            const el = document.getElementById('api-status');
-            if (msg) el.innerHTML = `| API: ${msg}`;
-            else el.innerHTML = `| Queue: ${fetchQueue.length}`;
+            // Updated to be simpler, handled by updateStatusUI mostly now
         }
 
         async function fetchSingle(item) {
@@ -846,7 +853,6 @@
                         else change = data.dp;
                         marketOverviewData[item.symbol] = { price: data.c, change: change };
                     } else {
-                        // FIX: Handle empty data for indices to stop loading spinner
                         marketOverviewData[item.symbol] = { price: 0, change: 0, error: true };
                     }
                     renderMarketOverview();
@@ -899,7 +905,6 @@
                 }
             } catch (e) { 
                 console.error(e);
-                // FIX: Stop loading even on error
                 if(!item.isMarketIndex) {
                     item.loading = false;
                     render();
@@ -1066,13 +1071,14 @@
             `).join('');
         }
 
+        // Updated Render Market Overview with Mini Pokeball Logic
         function renderMarketOverview() {
             const el = document.getElementById('market-overview');
             if (!el) return;
             el.innerHTML = MARKET_SYMBOLS.map(m => {
                 const d = marketOverviewData[m.s];
                 // Check if loading or error
-                const isLoading = !d;
+                const isLoading = !d || d.price === 0;
                 const isError = d && d.error;
                 
                 let content = '';
@@ -1184,6 +1190,8 @@
                             ${holdingDisplay}
                         </div>
                     </div>
+
+                    <!-- Clean UI: No Risk Score Bar -->
                 </div>`;
             }).join('');
         }

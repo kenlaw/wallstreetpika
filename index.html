@@ -98,19 +98,11 @@
             display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
         }
 
-        /* Market Badge - Updated to match buttons height */
+        /* Market Badge */
         .market-badge {
-            font-size: 0.85rem; /* Match version tag */
-            padding: 8px 12px;  /* Match version tag padding */
-            border-radius: 8px; /* Match version tag radius */
-            font-weight: 700; 
-            text-transform: uppercase; 
-            white-space: nowrap;
-            border: 1px solid transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.2;
+            font-size: 0.85rem; padding: 8px 12px; border-radius: 8px; font-weight: 700; 
+            text-transform: uppercase; white-space: nowrap; border: 1px solid transparent;
+            display: flex; align-items: center; justify-content: center; line-height: 1.2;
         }
         .market-badge.open { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
         .market-badge.pre { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
@@ -119,6 +111,14 @@
 
         .control-panel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
+        /* Select Dropdown */
+        select.refresh-select {
+            background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 12px;
+            border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: #4b5563;
+            outline: none; cursor: pointer;
+        }
+        select.refresh-select:focus { border-color: var(--pika-yellow); }
+
         .version-tag {
             font-family: 'Roboto Mono', monospace; font-size: 0.85rem; color: #9ca3af; 
             background: #f9fafb; padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-weight: 700;
@@ -139,6 +139,10 @@
         .btn-primary { background: var(--pika-yellow); color: #422006; }
         .btn-primary:hover { background: #fcd34d; }
         .btn-outline { background: white; border: 1px solid #d1d5db; color: var(--text-secondary); }
+        
+        /* Privacy Toggle Button */
+        .btn-privacy { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+        .btn-privacy.active { background: #1f2937; color: #fff; border-color: #374151; }
 
         /* --- TABS Navigation --- */
         .tabs {
@@ -179,6 +183,9 @@
         .net-val { color: var(--pika-yellow); text-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
         .snap-btn { background: #374151; color: #fff; border: 1px solid #475569; font-size: 0.8rem; padding: 8px 16px; border-radius: 8px; cursor: pointer; margin-top: 5px; width: 100%; font-weight: 600;}
         .snap-btn:hover { background: #475569; }
+
+        /* Privacy Mask Class */
+        .mask-text { filter: blur(4px); opacity: 0.6; pointer-events: none; user-select: none; }
 
         /* --- View Containers --- */
         .view-section { display: none; }
@@ -286,7 +293,10 @@
         }
         .holdings-input-group { display: flex; align-items: center; gap: 6px; }
         .holdings-label { font-size: 0.7rem; font-weight: 700; color: #6b7280; text-transform: uppercase; }
-        .shares-input { width: 70px; padding: 4px 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid #d1d5db; }
+        
+        /* FIX 2: Increased Width 1.8x (70px -> 126px) */
+        .shares-input { width: 126px; padding: 4px 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid #d1d5db; }
+        
         .holdings-val { font-family: 'Roboto Mono', monospace; font-weight: 700; color: var(--text-primary); font-size: 0.9rem; }
 
         .perf-row {
@@ -309,6 +319,7 @@
 
         .text-up { color: var(--col-up); } .text-down { color: var(--col-down); } .text-flat { color: var(--col-flat); }
         
+        /* Pokeball Loader */
         .loader { 
             position: absolute; inset: 0; background: rgba(255,255,255,0.9); 
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; 
@@ -365,10 +376,24 @@
         </div>
 
         <div class="control-panel">
-            <span class="version-tag">v2.4</span>
-            <!-- Market Status Badge now in Control Panel with matching height -->
+            <span class="version-tag">v2.5</span>
+            <!-- Market Status -->
             <div id="global-status"></div>
             
+            <!-- FIX 3: Refresh Rate Selector -->
+            <select class="refresh-select" onchange="changeRefreshRate(this.value)">
+                <option value="3000" selected>⏱️ 3s</option>
+                <option value="5000">⏱️ 5s</option>
+                <option value="10000">⏱️ 10s</option>
+                <option value="30000">⏱️ 30s</option>
+                <option value="0">⏱️ STOP</option>
+            </select>
+
+            <!-- FIX 1: Privacy Toggle -->
+            <button class="btn btn-privacy" id="privacy-btn" onclick="togglePrivacy()" title="Privacy Mode">
+                👁️
+            </button>
+
             <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline">
                 📖 聖經
             </a>
@@ -385,11 +410,11 @@
 
     <!-- VIEW: DASHBOARD -->
     <div id="view-dashboard" class="view-section active">
-        <!-- NEW ASSET PANEL -->
+        <!-- ASSET PANEL -->
         <div class="asset-panel">
             <div class="ap-item">
                 <span class="ap-label">Total (HKD)</span>
-                <span class="ap-val" id="total-assets">HK$ --</span>
+                <span class="ap-val p-mask" id="total-assets">HK$ --</span>
                 <span class="ap-sub">Rate: <span id="fx-rate">7.78</span> (USD/HKD)</span>
             </div>
             <div class="ap-item">
@@ -398,7 +423,7 @@
             </div>
             <div class="ap-item">
                 <span class="ap-label">Net Equity</span>
-                <span class="ap-val net-val" id="net-value">HK$ --</span>
+                <span class="ap-val net-val p-mask" id="net-value">HK$ --</span>
                 <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
                     <span class="ap-sub" id="lev-display">Lev: --</span>
                     <button class="snap-btn" onclick="takeSnapshot()">📷 Snap</button>
@@ -437,7 +462,7 @@
 
     <script>
         const API_KEY = 'd62qgopr01qnpu82ah0gd62qgopr01qnpu82ah10';
-        const STORAGE_KEY = 'pika_stocks_v2_3'; 
+        const STORAGE_KEY = 'pika_stocks_v2_5'; 
         
         // Default Config
         const DEFAULT_STOCKS = [
@@ -451,24 +476,19 @@
         let loanAmount = 0;
         let usdHkdRate = 7.78; 
         let snapshots = [];
+        let isPrivacy = false; // Privacy toggle state
+        let refreshIntervalId = null;
+        let refreshDelay = 3000; // Default 3s
 
         // --- Pika Sound Logic ---
         function playPika() {
             if (!window.speechSynthesis) return;
-            
             const speak = () => {
                 const u = new SpeechSynthesisUtterance("Pika Pika!");
-                u.pitch = 1.8; // High pitch for cuteness
-                u.rate = 1.4; // Fast speed
-                u.volume = 1;
-                // Try to find a fitting voice if possible, else default
+                u.pitch = 1.8; u.rate = 1.4; u.volume = 1;
                 window.speechSynthesis.speak(u);
             };
-
-            // Play 3 times
-            speak();
-            setTimeout(speak, 800);
-            setTimeout(speak, 1600);
+            speak(); setTimeout(speak, 800); setTimeout(speak, 1600);
         }
 
         // --- Logic ---
@@ -486,8 +506,7 @@
 
         function getNyDateString(dateObj) {
             return new Intl.DateTimeFormat('en-US', { 
-                timeZone: 'America/New_York', 
-                year: 'numeric', month: 'numeric', day: 'numeric' 
+                timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' 
             }).format(dateObj);
         }
 
@@ -523,11 +542,12 @@
         // --- IMPORT / EXPORT FUNCTIONS ---
         function exportData() {
             const data = {
-                version: "2.3",
+                version: "2.5",
                 date: new Date().toISOString(),
                 stocks: marketData,
                 loan: loanAmount,
-                snapshots: snapshots
+                snapshots: snapshots,
+                privacy: isPrivacy // Save privacy state
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
@@ -546,45 +566,33 @@
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    // Basic validation
                     if (data.stocks && Array.isArray(data.stocks)) {
                         marketData = data.stocks;
                         loanAmount = data.loan || 0;
                         snapshots = data.snapshots || [];
+                        isPrivacy = data.privacy || false;
                         
-                        // Force refresh data fields
-                        marketData.forEach(s => {
-                            s.loading = true;
-                            if(!s.perf) s.perf = generatePerfStats('High');
-                        });
-                        
+                        marketData.forEach(s => { s.loading = true; if(!s.perf) s.perf = generatePerfStats('High'); });
                         saveData();
-                        render();
-                        renderHistory();
-                        document.getElementById('loan-input').value = loanAmount;
-                        fetchData(); // Fetch fresh prices
+                        loadStocks(); // Reload to apply UI
                         alert('Data Imported Successfully!');
                     } else {
                         throw new Error("Invalid Format");
                     }
-                } catch (err) {
-                    alert('Error: Invalid Backup File');
-                    console.error(err);
-                }
+                } catch (err) { alert('Error: Invalid Backup File'); }
             };
             reader.readAsText(file);
-            input.value = ''; // Reset input
+            input.value = '';
         }
 
-        // --- Storage Engine (Tri-Force) ---
+        // --- Storage Engine ---
         const SmartStorage = {
-            save: function(data, loan, snaps) {
+            save: function(data, loan, snaps, privacy) {
                 const payload = {
-                    stocks: data.map(s => ({ 
-                        symbol: s.symbol, beta: s.beta || 1.2, perf: s.perf, shares: s.shares || 0 
-                    })),
+                    stocks: data.map(s => ({ symbol: s.symbol, beta: s.beta || 1.2, perf: s.perf, shares: s.shares || 0 })),
                     loan: loan || 0,
-                    snapshots: snaps || []
+                    snapshots: snaps || [],
+                    privacy: privacy // FIX 1: Persist Privacy
                 };
                 const json = JSON.stringify(payload);
                 try { localStorage.setItem(STORAGE_KEY, json); } catch(e){}
@@ -595,20 +603,18 @@
                 let json = null;
                 try { json = localStorage.getItem(STORAGE_KEY); } catch(e){}
                 if(!json) try { json = sessionStorage.getItem(STORAGE_KEY); } catch(e){}
-                if(!json && window.name && window.name.startsWith('{')) {
-                    try { json = window.name; } catch(e){}
-                }
+                if(!json && window.name && window.name.startsWith('{')) { try { json = window.name; } catch(e){} }
                 return json ? JSON.parse(json) : null;
             }
         };
 
         function loadStocks() {
             const saved = SmartStorage.load();
-            
             if (saved && saved.stocks && Array.isArray(saved.stocks)) {
                 marketData = saved.stocks;
                 loanAmount = saved.loan || 0;
                 snapshots = saved.snapshots || [];
+                isPrivacy = saved.privacy || false;
                 marketData.forEach(s => {
                     if (!s.perf) s.perf = generatePerfStats('High');
                     s.loading = true; 
@@ -621,13 +627,18 @@
             }
             
             document.getElementById('loan-input').value = loanAmount;
+            
+            // Apply Privacy State to UI
+            updatePrivacyUI();
+            
             render();
-            fetchData();
-            fetchFxRate(); 
+            fetchData(); // Initial fetch
+            fetchFxRate();
+            startRefreshTimer(); // Start Auto Refresh
         }
 
         function saveData() {
-            SmartStorage.save(marketData, loanAmount, snapshots);
+            SmartStorage.save(marketData, loanAmount, snapshots, isPrivacy);
             calculateAssets();
         }
 
@@ -635,9 +646,7 @@
             const input = document.getElementById('new-stock-input');
             const sym = input.value.trim().toUpperCase();
             if (!sym || marketData.find(s => s.symbol === sym)) return;
-            const newStock = { 
-                symbol: sym, beta: 1.5, loading: true, perf: generatePerfStats('Medium'), shares: 0
-            };
+            const newStock = { symbol: sym, beta: 1.5, loading: true, perf: generatePerfStats('Medium'), shares: 0 };
             marketData.push(newStock);
             saveData();
             input.value = '';
@@ -665,6 +674,41 @@
             saveData();
         }
 
+        // --- FIX 1: Privacy Toggle Logic ---
+        function togglePrivacy() {
+            isPrivacy = !isPrivacy;
+            updatePrivacyUI();
+            saveData();
+            render(); // Re-render to mask/unmask card values
+        }
+
+        function updatePrivacyUI() {
+            const btn = document.getElementById('privacy-btn');
+            const loanInput = document.getElementById('loan-input');
+            
+            if (isPrivacy) {
+                btn.classList.add('active');
+                loanInput.type = "password"; // Mask input
+            } else {
+                btn.classList.remove('active');
+                loanInput.type = "number"; // Unmask
+            }
+            calculateAssets(); // Update masking on total panel
+        }
+
+        // --- FIX 3: Auto Refresh Logic ---
+        function changeRefreshRate(val) {
+            refreshDelay = parseInt(val);
+            startRefreshTimer();
+        }
+
+        function startRefreshTimer() {
+            if (refreshIntervalId) clearInterval(refreshIntervalId);
+            if (refreshDelay > 0) {
+                refreshIntervalId = setInterval(fetchData, refreshDelay);
+            }
+        }
+
         // --- FX & Asset Logic ---
         async function fetchFxRate() {
             try {
@@ -690,14 +734,24 @@
             const netHkd = totalHkd - loanAmount;
             
             let lev = 0;
-            if (netHkd > 0) {
-                lev = (totalHkd / netHkd);
-            } else if (totalHkd > 0) {
-                lev = 999; 
-            }
+            if (netHkd > 0) { lev = (totalHkd / netHkd); } 
+            else if (totalHkd > 0) { lev = 999; }
 
-            document.getElementById('total-assets').innerText = 'HK$ ' + Math.round(totalHkd).toLocaleString();
-            document.getElementById('net-value').innerText = 'HK$ ' + Math.round(netHkd).toLocaleString();
+            // Display Logic with Privacy Check
+            const totalEl = document.getElementById('total-assets');
+            const netEl = document.getElementById('net-value');
+            
+            if (isPrivacy) {
+                totalEl.innerText = "HK$ ****";
+                netEl.innerText = "HK$ ****";
+                totalEl.classList.add('mask-text'); // Add blur class if you want, or just stars
+                netEl.classList.add('mask-text');
+            } else {
+                totalEl.innerText = 'HK$ ' + Math.round(totalHkd).toLocaleString();
+                netEl.innerText = 'HK$ ' + Math.round(netHkd).toLocaleString();
+                totalEl.classList.remove('mask-text');
+                netEl.classList.remove('mask-text');
+            }
             
             const levStr = lev === 999 ? "Risk" : lev.toFixed(2) + "x";
             const levEl = document.getElementById('lev-display');
@@ -714,13 +768,19 @@
         function takeSnapshot() {
             const now = new Date();
             const timeStr = now.toLocaleString("zh-HK", { hour12: false });
-            const assets = calculateAssets();
+            const assets = calculateAssets(); // Note: this might return stars if privacy is on!
+            
+            // To save real values in snapshot even if privacy is on, we recalculate internally
+            let totalUsd = 0;
+            marketData.forEach(s => { totalUsd += (s.currentPrice || 0) * (s.shares || 0); });
+            const realTotal = totalUsd * usdHkdRate;
+            const realNet = realTotal - loanAmount;
             
             const snap = {
                 id: Date.now(),
                 time: timeStr,
-                net: Math.round(assets.net).toLocaleString(),
-                total: Math.round(assets.total).toLocaleString(),
+                net: Math.round(realNet).toLocaleString(),
+                total: Math.round(realTotal).toLocaleString(),
                 loan: Math.round(loanAmount).toLocaleString(),
                 lev: assets.lev, 
                 details: marketData.map(s => ({
@@ -750,9 +810,7 @@
         function switchTab(tab) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(`view-${tab}`).classList.add('active');
-            
             const btns = document.querySelectorAll('.tab-btn');
             if(tab === 'dashboard') btns[0].classList.add('active');
             else {
@@ -767,7 +825,6 @@
                 container.innerHTML = '<div style="text-align:center; color:#9ca3af; padding:40px;">No snapshots yet.</div>';
                 return;
             }
-            
             container.innerHTML = snapshots.map(s => `
                 <div class="history-card" onclick="this.classList.toggle('open')">
                     <div class="h-time">${s.time}</div>
@@ -812,7 +869,7 @@
             updateGlobalStatus();
             for (let stock of marketData) {
                 fetchSingle(stock);
-                await new Promise(r => setTimeout(r, 400));
+                // We do NOT use await here heavily to allow fast concurrent updates if interval is short
             }
         }
 
@@ -851,9 +908,11 @@
                     stock.rsi = Math.min(Math.max(base + (Math.random()*4-2), 10), 90);
                     
                     calculateAssets(); 
+                    
+                    // Specific re-render of this card might be more efficient, but render() is fast enough
+                    render(); 
                 }
             } catch (e) { console.error(e); }
-            render();
         }
 
         function calculateRisk(stock) {
@@ -912,8 +971,16 @@
                 const shares = stock.shares || 0;
                 const priceVal = stock.currentPrice || 0;
                 const holdingValUsd = shares * priceVal;
-                // FIX 1: Explicitly convert to HKD for display
                 const holdingValHkd = holdingValUsd * usdHkdRate;
+                
+                // Privacy Masking Logic for Card
+                let holdingDisplay = `HK$ ${Math.round(holdingValHkd).toLocaleString()}`;
+                let sharesInputType = "number";
+                
+                if (isPrivacy) {
+                    holdingDisplay = "HK$ ****";
+                    sharesInputType = "password";
+                }
 
                 const loadingHtml = stock.loading ? `
                     <div class="loader">
@@ -941,10 +1008,10 @@
                     <div class="holdings-row">
                         <div class="holdings-input-group">
                             <span class="holdings-label">Shares</span>
-                            <input type="number" class="shares-input" value="${shares}" onchange="updateShares('${stock.symbol}', this.value)">
+                            <input type="${sharesInputType}" class="shares-input" value="${shares}" onchange="updateShares('${stock.symbol}', this.value)">
                         </div>
-                        <div class="holdings-val">
-                            HK$ ${Math.round(holdingValHkd).toLocaleString()}
+                        <div class="holdings-val ${isPrivacy?'mask-text':''}">
+                            ${holdingDisplay}
                         </div>
                     </div>
 
@@ -984,7 +1051,6 @@
 
         initTicker();
         loadStocks();
-        setInterval(fetchData, 20000);
         setInterval(updateGlobalStatus, 60000);
 
     </script>

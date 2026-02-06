@@ -120,7 +120,7 @@
             display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
         }
 
-        /* New Profile Pic Style - Updated V3.8 */
+        /* Profile Pic Style */
         .profile-pic {
             width: 48px;
             height: 48px;
@@ -130,7 +130,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-left: 4px;
             zoom: 120%;
-            cursor: pointer; /* Interaction Cue */
+            cursor: pointer; 
             transition: transform 0.1s;
         }
         .profile-pic:active { transform: scale(0.9); }
@@ -215,6 +215,25 @@
         .mask-text { filter: blur(4px); opacity: 0.6; pointer-events: none; user-select: none; }
         .view-section { display: none; } .view-section.active { display: block; }
 
+        /* --- Market Overview (Top Bar) --- */
+        .market-overview {
+            max-width: 1200px; margin: 0 auto 16px auto;
+            display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none; 
+        }
+        .market-overview::-webkit-scrollbar { display: none; }
+        
+        .market-card {
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+            padding: 10px 16px; min-width: 120px; flex-shrink: 0; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+        .market-card:hover { transform: translateY(-2px); border-color: var(--pika-yellow); }
+        .mc-name { font-size: 0.7rem; font-weight: 700; color: #6b7280; text-transform: uppercase; }
+        .mc-price { font-family: 'Roboto Mono', monospace; font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-top: 2px;}
+        .mc-change { font-size: 0.75rem; font-weight: 700; margin-top: 2px; }
+
         .ticker-container {
             max-width: 1200px; margin: 0 auto 24px auto; background: #fff; border-radius: 50px;
             padding: 4px; box-shadow: var(--shadow); border: 1px solid #e5e7eb;
@@ -226,7 +245,11 @@
             padding: 0 12px; height: 30px; border-radius: 40px; display: flex; align-items: center;
             flex-shrink: 0;
         }
-        
+        .sound-btn {
+            background: #fef08a; border: 1px solid #facc15; color: #422006; width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: transform 0.1s;
+        }
+        .sound-btn:active { transform: scale(0.9); }
         .ticker-content { white-space: nowrap; animation: marquee 120s linear infinite; }
         .ticker-item { display: inline-block; margin-right: 30px; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
@@ -282,6 +305,28 @@
         .pokeball::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: #ef4444; border-bottom: 3px solid #333; }
         .pokeball::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; background: #fff; border: 3px solid #333; border-radius: 50%; z-index: 2; }
         .loading-text { font-size: 0.7rem; font-weight: 700; color: #6b7280; margin-top: 8px; }
+        
+        /* NEW: Mini Pokeball Loader for Market Overview */
+        .mini-loader {
+            position: absolute; inset: 0; background: rgba(255,255,255,0.9);
+            display: flex; justify-content: center; align-items: center; z-index: 10;
+            border-radius: 12px;
+        }
+        .mini-pokeball {
+            width: 20px; height: 20px; background: #fff;
+            border: 2px solid #333; border-radius: 50%;
+            position: relative; overflow: hidden;
+            animation: shake 1.5s infinite ease-in-out;
+        }
+        .mini-pokeball::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background: #ef4444; border-bottom: 2px solid #333;
+        }
+        .mini-pokeball::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: #fff; border: 2px solid #333; border-radius: 50%; z-index: 2;
+        }
+
         @keyframes shake { 0% { transform: rotate(0deg); } 20% { transform: rotate(-10deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-10deg); } 100% { transform: rotate(0deg); } }
 
         @media (max-width: 768px) {
@@ -298,11 +343,8 @@
 <body>
 
     <!-- WELCOME SCREEN -->
-    <!-- Added onclick="manualEnter()" to enable clicking anywhere to enter -->
     <div id="welcome-screen" onclick="manualEnter()">
         <img src="welcome.jpg" alt="FAT FAT PIKA" class="welcome-img" onerror="this.style.display='none'">
-        <!-- FIX 1: Quote Removed as requested -->
-        <!-- Replaced button with simple text countdown -->
         <div id="countdown-text" class="countdown-text">Entering in 8...</div>
     </div>
 
@@ -314,16 +356,13 @@
                 </svg>
             </div>
             <div class="title-group">
-                <!-- FIX 2: Updated Title -->
                 <h1>Wall Street <span>Pika</span></h1>
                 <div class="subtitle">Mini Stock Dashboard</div>
             </div>
-            <!-- Added Profile Pic with Sound Trigger -->
             <img src="pikaprofile.png" alt="Profile" class="profile-pic" onclick="playPika()" title="Click for Pika!" onerror="this.style.display='none'">
         </div>
 
         <div class="control-panel">
-            <!-- FIX 5: API Status on Top -->
             <span id="api-status-top" class="api-tag">Idle</span>
             
             <div id="global-status"></div>
@@ -368,6 +407,11 @@
             </div>
         </div>
 
+        <!-- Market Overview Bar -->
+        <div class="market-overview" id="market-overview">
+            <!-- JS Populated -->
+        </div>
+
         <div class="ticker-container">
             <div class="ticker-left-group">
                 <div class="ticker-label">PIKA WISDOM</div>
@@ -405,6 +449,18 @@
             { symbol: 'UPST', beta: 2.8, shares: 0 }
         ];
 
+        // Market Overview Symbols
+        const MARKET_SYMBOLS = [
+            { s: 'BINANCE:BTCUSDT', n: 'BTC' },
+            { s: 'USO', n: 'Oil' },
+            { s: 'GLD', n: 'Gold' },
+            { s: 'IEF', n: '10Y Bond' }, 
+            { s: 'DIA', n: 'Dow' },
+            { s: 'QQQ', n: 'Nasdaq' },
+            { s: 'SPY', n: 'S&P 500' }
+        ];
+        let marketOverviewData = {}; 
+
         let marketData = [];
         let loanAmount = 0;
         let usdHkdRate = 7.78; 
@@ -416,23 +472,17 @@
         let userIntervalTimer = null;
         let queueProcessorTimer = null;
         
-        // Countdowns
         let welcomeTimer = null;
         let nextFetchTime = 0;
         let statusUpdateTimer = null;
 
-        // --- Welcome Screen Logic ---
         function startWelcomeCountdown() {
-            // FIX 2: 8 seconds
             let count = 8;
             const textEl = document.getElementById('countdown-text');
-            
             welcomeTimer = setInterval(() => {
                 count--;
                 if (textEl) textEl.innerText = `Entering in ${count}...`;
-                if (count <= 0) {
-                    manualEnter();
-                }
+                if (count <= 0) manualEnter();
             }, 1000);
         }
         
@@ -440,12 +490,9 @@
             if (welcomeTimer) clearInterval(welcomeTimer);
             const screen = document.getElementById('welcome-screen');
             screen.style.opacity = '0';
-            setTimeout(() => {
-                screen.style.display = 'none';
-            }, 500);
+            setTimeout(() => { screen.style.display = 'none'; }, 500);
         }
 
-        // Start Countdown on Load
         window.addEventListener('load', startWelcomeCountdown);
 
         function playPika() {
@@ -500,7 +547,7 @@
 
         function exportData() {
             const data = {
-                version: "3.7",
+                version: "4.1",
                 date: new Date().toISOString(),
                 stocks: marketData,
                 loan: loanAmount,
@@ -614,6 +661,10 @@
 
             updatePrivacyUI();
             render();
+            // Initialize Market Overview placeholders
+            MARKET_SYMBOLS.forEach(m => { marketOverviewData[m.s] = { price: 0, change: 0 }; });
+            renderMarketOverview();
+            
             fetchFxRate();
             startQueueSystem(); 
         }
@@ -647,7 +698,8 @@
                 saveData();
                 input.value = '';
                 render();
-                fetchSingle(newStock);
+                // We add to queue via refillQueue called next cycle, or manually fetch
+                fetchQueue.unshift(newStock); // Prioritize new stock
                 
             } catch(e) {
                 alert("Error validating stock");
@@ -738,7 +790,6 @@
                 return;
             }
 
-            // Idle countdown
             const now = Date.now();
             if (nextFetchTime > now) {
                 const diff = Math.ceil((nextFetchTime - now) / 1000);
@@ -749,12 +800,20 @@
         }
 
         function refillQueue() {
+            // Add user stocks
             marketData.forEach(stock => {
-                if (!fetchQueue.includes(stock)) {
+                if (!fetchQueue.find(item => item.symbol === stock.symbol)) {
                     fetchQueue.push(stock);
                 }
             });
-            // Reset next target time
+            // Add Market Indices (Wrapped in objects to fit queue)
+            MARKET_SYMBOLS.forEach(m => {
+                // Check if already in queue (using a property to identify)
+                if (!fetchQueue.find(item => item.isMarketIndex && item.symbol === m.s)) {
+                    fetchQueue.push({ symbol: m.s, isMarketIndex: true, name: m.n });
+                }
+            });
+
             if (refreshInterval > 0) {
                 nextFetchTime = Date.now() + refreshInterval;
             }
@@ -762,24 +821,49 @@
         }
 
         async function processQueue() {
-            if (fetchQueue.length === 0) return;
-            const stock = fetchQueue.shift();
-            updateStatusUI();
-            await fetchSingle(stock);
+            if (fetchQueue.length === 0) {
+                updateStatus('Idle');
+                return;
+            }
+            const item = fetchQueue.shift();
+            updateStatus(`Fetching ${item.symbol}...`);
+            await fetchSingle(item);
         }
 
-        async function fetchSingle(stock) {
+        function updateStatus(msg) {
+            const el = document.getElementById('api-status');
+            if (msg) el.innerHTML = `| API: ${msg}`;
+            else el.innerHTML = `| Queue: ${fetchQueue.length}`;
+        }
+
+        async function fetchSingle(item) {
             try {
                 const bust = Date.now();
-                const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${API_KEY}&_=${bust}`);
+                // Special handling for crypto symbols vs stock symbols if needed, but Finnhub quote works for both usually
+                // Note: For crypto symbols like BINANCE:BTCUSDT, use the quote endpoint as well.
+                const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${item.symbol}&token=${API_KEY}&_=${bust}`);
                 
                 if (res.status === 429) {
                     console.warn("Rate limit hit");
-                    fetchQueue.push(stock); 
+                    fetchQueue.push(item); 
                     return;
                 }
                 const data = await res.json();
 
+                // If it's a Market Index Item
+                if (item.isMarketIndex) {
+                    if (data.c) {
+                        let change = 0;
+                        if (data.pc > 0) change = ((data.c - data.pc) / data.pc) * 100;
+                        else change = data.dp;
+                        marketOverviewData[item.symbol] = { price: data.c, change: change };
+                        renderMarketOverview();
+                    }
+                    return;
+                }
+
+                // Normal Stock Item
+                const stock = item; // It's a reference to the object in marketData
                 if (data.c) {
                     const prevPrice = stock.currentPrice; 
                     stock.prevClose = data.pc; 
@@ -802,8 +886,7 @@
                         }
                     }
 
-                    // No perf stats needed
-                    // Simple RSI logic removed or kept minimal if needed for risk calc
+                    // RSI sim
                     let base = 50 + (stock.changePercent * 2);
                     stock.rsi = Math.min(Math.max(base + (Math.random()*4-2), 10), 90);
                     
@@ -986,6 +1069,45 @@
             `).join('');
         }
 
+        // Updated Render Market Overview with Mini Pokeball Logic
+        function renderMarketOverview() {
+            const el = document.getElementById('market-overview');
+            if (!el) return;
+            el.innerHTML = MARKET_SYMBOLS.map(m => {
+                const d = marketOverviewData[m.s];
+                // If price is 0 or undefined, assume loading
+                const isLoading = !d || d.price === 0;
+                
+                let content = '';
+                if (isLoading) {
+                    content = `
+                        <div class="mini-loader">
+                            <div class="mini-pokeball"></div>
+                        </div>
+                        <span class="mc-name">${m.n}</span>
+                        <span class="mc-price" style="opacity:0">--</span>
+                        <span class="mc-change" style="opacity:0">--</span>
+                    `;
+                } else {
+                    const p = d.price;
+                    const c = d.change;
+                    const col = c >= 0 ? 'text-up' : 'text-down';
+                    const sign = c >= 0 ? '+' : '';
+                    content = `
+                        <span class="mc-name">${m.n}</span>
+                        <span class="mc-price">${p.toFixed(2)}</span>
+                        <span class="mc-change ${col}">${sign}${c.toFixed(2)}%</span>
+                    `;
+                }
+                
+                return `
+                    <div class="market-card">
+                        ${content}
+                    </div>
+                `;
+            }).join('');
+        }
+
         function render() {
             const container = document.getElementById('app');
             const state = getMarketState();
@@ -1016,11 +1138,6 @@
                         timeHtml = `<div class="data-meta"><span class="data-time">Closed: ${timeDisplay}</span></div>`;
                     }
                 }
-
-                let riskScore = calculateRisk(stock);
-                let riskColor = 'var(--risk-med)';
-                if(riskScore < 35) { riskColor = 'var(--risk-low)'; }
-                if(riskScore > 65) { riskColor = 'var(--risk-high)'; }
 
                 const shares = stock.shares || 0;
                 const priceVal = stock.currentPrice || 0;
@@ -1064,8 +1181,6 @@
                             ${holdingDisplay}
                         </div>
                     </div>
-
-                    <!-- Clean UI: No Risk Score Bar -->
                 </div>`;
             }).join('');
         }

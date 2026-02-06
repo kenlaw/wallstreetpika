@@ -56,23 +56,31 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 0.5s ease, visibility 0.5s;
             padding: 20px; text-align: center;
+            cursor: pointer; /* Indicates clickable */
         }
         #welcome-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
         
         .welcome-img {
             max-width: 100%; max-height: 50vh; border-radius: 16px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05);
             margin-bottom: 24px; 
             /* Border removed */
         }
         
-        .enter-btn {
-            background: var(--pika-yellow); color: #422006; font-size: 1.2rem; font-weight: 800;
-            padding: 16px 48px; border-radius: 50px; border: none; cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(250, 204, 21, 0.4);
-            transition: transform 0.2s; min-width: 200px;
+        /* Updated: Dark Grey instead of Orange */
+        .welcome-quote {
+            font-size: 1.2rem; font-weight: 700; color: #374151; 
+            margin-bottom: 10px;
         }
-        .enter-btn:active { transform: scale(0.95); }
+        
+        /* New Countdown Text Style (No Button) */
+        .countdown-text {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            color: #9ca3af;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
 
         /* --- Header --- */
         header {
@@ -308,10 +316,11 @@
 <body>
 
     <!-- WELCOME SCREEN -->
-    <div id="welcome-screen">
+    <!-- Added onclick="manualEnter()" to enable clicking anywhere to enter -->
+    <div id="welcome-screen" onclick="manualEnter()">
         <img src="welcome.jpg" alt="FAT FAT PIKA" class="welcome-img" onerror="this.style.display='none'">
-        <!-- FIX 3: Countdown Button -->
-        <button id="enter-btn" class="enter-btn" onclick="manualEnter()">ENTER (8)</button>
+        <!-- Replaced button with simple text countdown -->
+        <div id="countdown-text" class="countdown-text">Entering in 8...</div>
     </div>
 
     <header>
@@ -369,7 +378,7 @@
                 <span class="ap-val net-val p-mask" id="net-value">HK$ --</span>
                 <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
                     <span class="ap-sub" id="lev-display">Lev: --</span>
-                    <button class="snap-btn" onclick="takeSnapshot()">📷 Snap</button>
+                    <button class="snap-btn" onclick="event.stopPropagation(); takeSnapshot()">📷 Snap</button>
                 </div>
             </div>
         </div>
@@ -432,11 +441,11 @@
         function startWelcomeCountdown() {
             // FIX 2: 8 seconds
             let count = 8;
-            const btn = document.getElementById('enter-btn');
+            const textEl = document.getElementById('countdown-text');
             
             welcomeTimer = setInterval(() => {
                 count--;
-                if (btn) btn.innerText = `ENTER (${count})`;
+                if (textEl) textEl.innerText = `Entering in ${count}...`;
                 if (count <= 0) {
                     manualEnter();
                 }

@@ -244,6 +244,7 @@
         .toggle-btn { background: none; border: none; color: #6b7280; cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
         .del-hist-btn { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.75rem; }
 
+        /* Card */
         .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid #e5e7eb; box-shadow: var(--shadow); transition: transform 0.2s; position: relative; display: flex; flex-direction: column; overflow: visible; min-height: auto; }
         .card-top { padding: 16px 20px 10px 20px; display: flex; justify-content: space-between; align-items: flex-start; }
         .stock-info h2 { margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
@@ -298,7 +299,7 @@
         <!-- FIX 2: Updated Quote -->
         <div class="welcome-quote">祝你每天都賺到 FAT FAT</div>
         <!-- FIX 3: Countdown Button -->
-        <button id="enter-btn" class="enter-btn" onclick="manualEnter()">ENTER (3)</button>
+        <button id="enter-btn" class="enter-btn" onclick="manualEnter()">ENTER (8)</button>
     </div>
 
     <header>
@@ -381,13 +382,16 @@
     </div>
 
     <div style="text-align: center; margin-top: 40px; margin-bottom: 20px; color: #9ca3af; font-size: 0.7rem;">
-        Mini Dashboard
+        Mini Dashboard <span id="api-status">| API: Idle</span>
     </div>
 
     <script>
         const API_KEY = 'd62qgopr01qnpu82ah0gd62qgopr01qnpu82ah10';
         const STORAGE_KEY = 'pika_dashboard_stable_v1';
-        const LEGACY_KEYS = ['pika_stocks_v3_2', 'pika_stocks_v3_1', 'pika_stocks_v3_0'];
+        const LEGACY_KEYS = [
+            'pika_stocks_v3_2', 'pika_stocks_v3_1', 'pika_stocks_v3_0', 
+            'pika_stocks_v2_6', 'pika_stocks_v2_5', 'pika_stocks_v2_3'
+        ];
         
         const DEFAULT_STOCKS = [
             { symbol: 'KEN', beta: 1.5, shares: 0 }, 
@@ -413,7 +417,8 @@
 
         // --- Welcome Screen Logic ---
         function startWelcomeCountdown() {
-            let count = 3;
+            // FIX 2: 8 seconds
+            let count = 8;
             const btn = document.getElementById('enter-btn');
             
             welcomeTimer = setInterval(() => {
@@ -1006,6 +1011,11 @@
                     }
                 }
 
+                let riskScore = calculateRisk(stock);
+                let riskColor = 'var(--risk-med)';
+                if(riskScore < 35) { riskColor = 'var(--risk-low)'; }
+                if(riskScore > 65) { riskColor = 'var(--risk-high)'; }
+
                 const shares = stock.shares || 0;
                 const priceVal = stock.currentPrice || 0;
                 const holdingValUsd = shares * priceVal;
@@ -1024,6 +1034,7 @@
                 return `
                 <div class="card">
                     ${loadingHtml}
+                    <!-- FIX 2: Delete Button Moved to Edge -->
                     <button class="delete-btn" onclick="removeStock('${stock.symbol}')">✕</button>
                     
                     <div class="card-top">
@@ -1047,6 +1058,8 @@
                             ${holdingDisplay}
                         </div>
                     </div>
+
+                    <!-- Clean UI: No Risk Score Bar -->
                 </div>`;
             }).join('');
         }

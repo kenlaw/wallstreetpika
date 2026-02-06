@@ -64,16 +64,13 @@
             max-width: 100%; max-height: 50vh; border-radius: 16px; 
             box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05);
             margin-bottom: 24px; 
-            /* Border removed */
         }
         
-        /* Updated: Dark Grey instead of Orange */
         .welcome-quote {
             font-size: 1.2rem; font-weight: 700; color: #374151; 
             margin-bottom: 10px;
         }
         
-        /* New Countdown Text Style (No Button) */
         .countdown-text {
             font-family: 'Roboto Mono', monospace;
             font-size: 0.9rem;
@@ -123,17 +120,20 @@
             display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
         }
 
-        /* New Profile Pic Style */
+        /* New Profile Pic Style - Updated V3.8 */
         .profile-pic {
             width: 48px;
             height: 48px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #CCCCCC;
+            /* Border removed */
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-left: 4px;
             zoom: 120%;
+            cursor: pointer; /* Interaction Cue */
+            transition: transform 0.1s;
         }
+        .profile-pic:active { transform: scale(0.9); }
 
         .market-badge {
             font-size: 0.85rem; padding: 8px 12px; border-radius: 8px; font-weight: 700; 
@@ -226,11 +226,7 @@
             padding: 0 12px; height: 30px; border-radius: 40px; display: flex; align-items: center;
             flex-shrink: 0;
         }
-        .sound-btn {
-            background: #fef08a; border: 1px solid #facc15; color: #422006; width: 30px; height: 30px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: transform 0.1s;
-        }
-        .sound-btn:active { transform: scale(0.9); }
+        
         .ticker-content { white-space: nowrap; animation: marquee 120s linear infinite; }
         .ticker-item { display: inline-block; margin-right: 30px; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
@@ -322,8 +318,8 @@
                 <h1>Wall Street <span>Pika</span></h1>
                 <div class="subtitle">Mini Stock Dashboard</div>
             </div>
-            <!-- Added Profile Pic -->
-            <img src="pikaprofile.png" alt="Profile" class="profile-pic" onerror="this.style.display='none'">
+            <!-- Added Profile Pic with Sound Trigger -->
+            <img src="pikaprofile.png" alt="Profile" class="profile-pic" onclick="playPika()" title="Click for Pika!" onerror="this.style.display='none'">
         </div>
 
         <div class="control-panel">
@@ -375,7 +371,6 @@
         <div class="ticker-container">
             <div class="ticker-left-group">
                 <div class="ticker-label">PIKA WISDOM</div>
-                <button class="sound-btn" onclick="playPika()" title="Pika!">🔊</button>
             </div>
             <div class="ticker-content" id="ticker-content"></div>
         </div>

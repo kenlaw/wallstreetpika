@@ -302,42 +302,69 @@
 
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
         
-        /* List View Styles */
+        /* List View Styles - FIX 1: Enhanced List View */
         .dashboard-grid.list-view {
             grid-template-columns: 1fr; gap: 12px;
         }
         .dashboard-grid.list-view .card {
-            flex-direction: row; align-items: center; padding: 12px 16px;
-            min-height: auto; justify-content: space-between;
+            flex-direction: row; align-items: center; padding: 10px 16px;
+            min-height: 80px; justify-content: flex-start; gap: 20px;
         }
+
         .dashboard-grid.list-view .card-top {
-            padding: 0; flex: 1; display: flex; align-items: center; justify-content: flex-start;
-            margin-bottom: 0; border: none;
+            padding: 0; width: auto; flex: 0 0 auto;
+            display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+            margin: 0; border: none;
         }
         .dashboard-grid.list-view .stock-info {
-            display: flex; align-items: center; gap: 10px; padding: 0;
+            display: flex; align-items: center; gap: 8px; padding: 0;
         }
-        .dashboard-grid.list-view .stock-info h2 { font-size: 1.2rem; margin: 0; }
-        .dashboard-grid.list-view .market-tag { display: none; } /* Hide tag in list for space */
+        .dashboard-grid.list-view .stock-info h2 { font-size: 1.4rem; margin: 0; }
         
+        /* Show market tag in list view now */
+        .dashboard-grid.list-view .market-tag { 
+            display: inline-block; font-size: 0.6rem; padding: 2px 6px; 
+        }
+
         .dashboard-grid.list-view .price-group {
-            display: flex; align-items: center; gap: 10px; margin-left: 20px; text-align: left;
+            display: flex; flex-direction: column; align-items: flex-end;
+            margin: 0; text-align: right; min-width: 100px;
         }
-        .dashboard-grid.list-view .price-val { font-size: 1.1rem; }
-        .dashboard-grid.list-view .price-change { font-size: 0.8rem; }
-        .dashboard-grid.list-view .data-meta { display: none; }
+        .dashboard-grid.list-view .price-val { font-size: 1.2rem; }
+        .dashboard-grid.list-view .price-change { font-size: 0.85rem; }
         
+        /* Show time in list view now */
+        .dashboard-grid.list-view .data-meta { display: block; margin-top: 2px; }
+        .dashboard-grid.list-view .data-time { font-size: 0.6rem; }
+        .dashboard-grid.list-view .stale-badge { display: none; }
+
+        /* Push holdings to the right */
         .dashboard-grid.list-view .holdings-row {
             background: transparent; border: none; padding: 0; width: auto;
-            flex-direction: row; gap: 10px; margin-left: auto; margin-right: 40px; /* Space for delete btn */
+            flex-direction: row; gap: 15px; margin-left: auto; /* Push to right */
+            margin-right: 40px; /* Space for delete btn */
+            border-radius: 0;
         }
-        .dashboard-grid.list-view .holdings-input-group { gap: 4px; }
-        .dashboard-grid.list-view .shares-input { width: 80px; padding: 4px; font-size: 0.8rem; }
-        .dashboard-grid.list-view .holdings-label { display: none; }
-        .dashboard-grid.list-view .holdings-val { font-size: 0.85rem; min-width: 80px; text-align: right; }
+        .dashboard-grid.list-view .holdings-input-group { gap: 6px; }
+        .dashboard-grid.list-view .shares-input { width: 90px; padding: 6px; font-size: 0.85rem; }
+        .dashboard-grid.list-view .holdings-label { display: block; font-size: 0.65rem; margin-bottom: 0; } /* Show label */
+        .dashboard-grid.list-view .holdings-val { font-size: 1rem; min-width: 100px; text-align: right; }
         
-        .dashboard-grid.list-view .delete-btn { top: 50%; transform: translateY(-50%); right: 10px; border-radius: 6px; width: 24px; height: 24px; }
+        /* Loader Fix for List View */
+        .dashboard-grid.list-view .loader {
+            flex-direction: row; gap: 10px; background: rgba(255,255,255,0.9);
+        }
+        .dashboard-grid.list-view .pokeball {
+            width: 24px; height: 24px; border-width: 2px;
+        }
+        .dashboard-grid.list-view .pokeball::before { border-bottom-width: 2px; }
+        .dashboard-grid.list-view .pokeball::after { width: 8px; height: 8px; border-width: 2px; }
+        .dashboard-grid.list-view .loading-text { margin-top: 0; font-size: 0.8rem; }
 
+        .dashboard-grid.list-view .delete-btn {
+            top: 50%; transform: translateY(-50%); right: 16px;
+            width: 28px; height: 28px; border-radius: 6px;
+        }
 
         .data-tools { max-width: 1200px; margin: 0 auto 20px auto; display: flex; gap: 10px; justify-content: flex-end; }
         .history-list { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
@@ -431,7 +458,8 @@
 
         <div class="control-panel">
             <div class="info-group">
-                <span class="version-tag">v4.7</span>
+                <span class="version-tag">v4.9</span>
+                <!-- FIX 2: Changed Status Text to BUSY -->
                 <span id="api-status-top" class="api-status-text">Idle</span>
             </div>
             
@@ -446,7 +474,8 @@
             </select>
             <button class="btn btn-privacy" id="privacy-btn" onclick="togglePrivacy()" title="Privacy Mode">👁️</button>
             <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline">BIBLE</a>
-            <input type="text" id="new-stock-input" placeholder="CODE" maxlength="5">
+            <!-- FIX 3: Added onkeyup to allow Enter key -->
+            <input type="text" id="new-stock-input" placeholder="CODE" maxlength="5" onkeyup="if(event.key === 'Enter') addNewStock()">
             <button class="btn btn-primary" onclick="addNewStock()">+</button>
         </div>
     </header>
@@ -477,12 +506,8 @@
             </div>
         </div>
 
-        <!-- Market Overview Bar -->
-        <div class="market-overview" id="market-overview">
-            <!-- JS Populated -->
-        </div>
+        <div class="market-overview" id="market-overview"></div>
 
-        <!-- NEW: Dashboard Toolbar -->
         <div class="dashboard-toolbar">
              <div style="font-size:0.7rem; color:#9ca3af; font-weight:700;">STOCKS</div>
              <div class="toolbar-group">
@@ -507,8 +532,12 @@
 
     <div id="view-history" class="view-section">
         <div class="data-tools">
-            <button class="btn btn-outline" onclick="exportData()">⬇️ Export Data</button>
-            <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆️ Import Data</button>
+            <!-- FIX 4: Text based Import/Export, and display:inline-block for file buttons -->
+            <button class="btn btn-outline" onclick="exportDataString()">📋 Copy Code</button>
+            <button class="btn btn-outline" onclick="importDataString()">📋 Paste Code</button>
+            
+            <button class="btn btn-outline" onclick="exportData()">⬇️ Export File</button>
+            <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆️ Import File</button>
             <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(this)">
         </div>
         <div class="history-list" id="history-container"></div>
@@ -560,9 +589,8 @@
         let nextFetchTime = 0;
         let statusUpdateTimer = null;
 
-        // View & Sort State
         let currentSort = 'def'; 
-        // Fix: Default to list view on mobile
+        // Default View Logic: Mobile -> List, Desktop -> Grid
         let currentView = window.innerWidth <= 768 ? 'list' : 'grid';
 
         function startWelcomeCountdown() {
@@ -583,7 +611,6 @@
         }
 
         window.addEventListener('load', () => {
-            // Only start countdown here
             startWelcomeCountdown();
         });
 
@@ -637,9 +664,56 @@
             if(el) el.innerHTML = `<span class="market-badge ${state.color}">${state.label}</span>`;
         }
 
+        // FIX 4: String Export/Import
+        function exportDataString() {
+            const data = {
+                version: "4.9",
+                date: new Date().toISOString(),
+                stocks: marketData,
+                loan: loanAmount,
+                snapshots: snapshots,
+                privacy: isPrivacy,
+                refreshRate: refreshInterval
+            };
+            const json = JSON.stringify(data);
+            const encoded = btoa(unescape(encodeURIComponent(json)));
+            navigator.clipboard.writeText(encoded).then(() => {
+                alert("Copied to clipboard!");
+            });
+        }
+
+        function importDataString() {
+            const str = prompt("Paste your data code here:");
+            if(!str) return;
+            try {
+                const json = decodeURIComponent(escape(atob(str)));
+                const data = JSON.parse(json);
+                if (data.stocks && Array.isArray(data.stocks)) {
+                    marketData = data.stocks;
+                    loanAmount = data.loan || 0;
+                    snapshots = data.snapshots || [];
+                    isPrivacy = data.privacy || false;
+                    refreshInterval = data.refreshRate || 60000;
+                    
+                    marketData.forEach(s => { s.loading = true; });
+                    saveData();
+                    
+                    document.getElementById('refresh-rate').value = refreshInterval;
+                    updatePrivacyUI(); 
+                    document.getElementById('loan-input').value = loanAmount;
+                    render(); 
+                    renderHistory();
+                    changeRefreshRate(refreshInterval); 
+                    alert('Restored Successfully!');
+                } else { throw new Error("Invalid Format"); }
+            } catch (err) {
+                alert("Invalid Code");
+            }
+        }
+
         function exportData() {
             const data = {
-                version: "4.7",
+                version: "4.9",
                 date: new Date().toISOString(),
                 stocks: marketData,
                 loan: loanAmount,
@@ -752,7 +826,7 @@
             }
 
             updatePrivacyUI();
-            updateViewUI(); // <--- Ensure this is here
+            updateViewUI();
             render();
             MARKET_SYMBOLS.forEach(m => { marketOverviewData[m.s] = { price: 0, change: 0 }; });
             renderMarketOverview();
@@ -857,12 +931,13 @@
             changeRefreshRate(refreshInterval);
         }
 
+        // FIX 2: Updated to "BUSY"
         function updateStatusUI() {
             const el = document.getElementById('api-status-top');
             if (!el) return;
 
             if (fetchQueue.length > 0) {
-                el.innerText = `Processing (${fetchQueue.length})`;
+                el.innerText = `BUSY (${fetchQueue.length})`;
                 el.classList.add('active');
                 return;
             }
@@ -903,16 +978,12 @@
 
         async function processQueue() {
             if (fetchQueue.length === 0) {
-                updateStatus('Idle');
+                updateStatusUI();
                 return;
             }
             const item = fetchQueue.shift();
-            updateStatus(`Fetching ${item.symbol}...`);
+            updateStatusUI();
             await fetchSingle(item);
-        }
-
-        function updateStatus(msg) {
-            // Updated to be simpler, handled by updateStatusUI mostly now
         }
 
         async function fetchSingle(item) {
@@ -1236,7 +1307,6 @@
             const container = document.getElementById('app');
             const state = getMarketState();
             
-            // --- NEW: Sorting Logic ---
             let displayData = [...marketData];
             if (currentSort !== 'def') {
                 displayData.sort((a, b) => {
@@ -1291,7 +1361,6 @@
                 return `
                 <div class="card">
                     ${loadingHtml}
-                    <!-- FIX 2: Delete Button Moved to Edge -->
                     <button class="delete-btn" onclick="removeStock('${stock.symbol}')">✕</button>
                     
                     <div class="card-top">

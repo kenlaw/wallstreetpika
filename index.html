@@ -9,7 +9,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Roboto+Mono:wght@500;700&display=swap');
 
         :root {
-            /* Theme Colors */
             --bg-color: #f3f4f6;
             --card-bg: #ffffff;
             --pika-yellow: #facc15;
@@ -19,20 +18,13 @@
             --text-primary: #111827;
             --text-secondary: #6b7280;
             
-            /* Status */
             --col-up: #10b981;
             --col-down: #ef4444;
             --col-flat: #9ca3af;
             
-            /* Risk */
             --risk-low: #10b981;
             --risk-med: #f59e0b;
             --risk-high: #ef4444;
-            
-            /* Sentiment */
-            --sent-bull: #ecfdf5; --sent-bull-text: #047857;
-            --sent-bear: #fef2f2; --sent-bear-text: #b91c1c;
-            --sent-neut: #f3f4f6; --sent-neut-text: #4b5563;
 
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             --radius: 16px;
@@ -216,6 +208,8 @@
             background: var(--card-bg); border-radius: var(--radius); border: 1px solid #e5e7eb;
             box-shadow: var(--shadow); transition: transform 0.2s; position: relative;
             display: flex; flex-direction: column; overflow: visible; 
+            /* FIX 4: Remove min-height */
+            min-height: auto; 
         }
         .card-top { padding: 16px 20px 10px 20px; display: flex; justify-content: space-between; align-items: flex-start; }
         .stock-info h2 { margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
@@ -244,28 +238,20 @@
         .delete-btn:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; }
 
         .holdings-row {
-            background: #f9fafb; padding: 10px 20px; border-top: 1px dashed #e5e7eb; border-bottom: 1px dashed #e5e7eb;
+            background: #f9fafb; padding: 10px 20px; border-top: 1px dashed #e5e7eb; 
             display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            /* FIX 4: Add bottom radius since it is now the last item */
+            border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);
         }
         .holdings-input-group { display: flex; align-items: center; gap: 6px; }
         .holdings-label { font-size: 0.7rem; font-weight: 700; color: #6b7280; text-transform: uppercase; }
         .shares-input { width: 126px; padding: 4px 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid #d1d5db; }
         .holdings-val { font-family: 'Roboto Mono', monospace; font-weight: 700; color: var(--text-primary); font-size: 0.9rem; }
 
-        .perf-row { display: flex; justify-content: flex-start; gap: 12px; padding: 10px 20px; border-bottom: 1px dashed #f3f4f6; }
-        .perf-item { font-size: 0.7rem; color: var(--text-secondary); font-family: 'Roboto Mono', monospace; font-weight: 500; }
-        .perf-val { font-weight: 700; margin-left: 2px; }
-
-        .risk-box { margin: 12px 20px 16px 20px; padding: 12px; border-radius: 12px; background: #f9fafb; border: 1px solid #f3f4f6; }
-        .risk-header { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; }
-        .progress-bg { height: 6px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-
-        .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid #e5e7eb; background: #fafafa; margin-top: auto; }
-        .metric { padding: 10px; text-align: center; border-right: 1px solid #e5e7eb; }
-        .metric:last-child { border-right: none; }
-        .m-label { font-size: 0.65rem; color: #9ca3af; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
-        .m-val { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); font-family: 'Roboto Mono', monospace; }
+        /* Hidden Sections */
+        .perf-row { display: none; }
+        .metrics { display: none; }
+        .risk-box { display: none; }
 
         .text-up { color: var(--col-up); } .text-down { color: var(--col-down); } .text-flat { color: var(--col-flat); }
         
@@ -283,7 +269,6 @@
             .control-panel input { width: 80px; }
             .asset-panel { grid-template-columns: 1fr; gap: 16px; }
             .dashboard-grid { grid-template-columns: 1fr; } 
-            .perf-row { justify-content: space-between; }
             .h-stats { flex-direction: column; gap: 8px; }
         }
     </style>
@@ -304,9 +289,8 @@
         </div>
 
         <div class="control-panel">
-            <span class="version-tag">v3.2</span>
+            <span class="version-tag">v3.3.2</span>
             <div id="global-status"></div>
-            <!-- FIX 2: Conservative Refresh Options -->
             <select class="refresh-select" id="refresh-rate" onchange="changeRefreshRate(this.value)">
                 <option value="60000" selected>⏱️ 1m</option>
                 <option value="300000">⏱️ 5m</option>
@@ -389,9 +373,8 @@
         let snapshots = [];
         let isPrivacy = false; 
         
-        // Queue System
         let fetchQueue = [];
-        let refreshInterval = 60000; // FIX 1: Default 1 min
+        let refreshInterval = 60000;
         let userIntervalTimer = null;
         let queueProcessorTimer = null;
 
@@ -641,10 +624,8 @@
         }
 
         function startQueueSystem() {
-            // FIX 3: Safety interval 1.5s
             if (queueProcessorTimer) clearInterval(queueProcessorTimer);
             queueProcessorTimer = setInterval(processQueue, 1500);
-
             changeRefreshRate(refreshInterval);
         }
 
@@ -662,7 +643,6 @@
                 updateStatus('Idle');
                 return;
             }
-            
             const stock = fetchQueue.shift();
             updateStatus(`Processing...`);
             await fetchSingle(stock);
@@ -928,12 +908,9 @@
 
                 let riskScore = calculateRisk(stock);
                 let riskColor = 'var(--risk-med)';
-                let riskLabel = 'HOLD';
-                if(riskScore < 35) { riskColor = 'var(--risk-low)'; riskLabel = 'SAFE'; }
-                if(riskScore > 65) { riskColor = 'var(--risk-high)'; riskLabel = 'HIGH RISK'; }
+                if(riskScore < 35) { riskColor = 'var(--risk-low)'; }
+                if(riskScore > 65) { riskColor = 'var(--risk-high)'; }
 
-                const perf = stock.perf || { d7: 0, d14: 0, d30: 0 };
-                
                 const shares = stock.shares || 0;
                 const priceVal = stock.currentPrice || 0;
                 const holdingValUsd = shares * priceVal;
@@ -977,36 +954,7 @@
                         </div>
                     </div>
 
-                    <div class="perf-row">
-                        <div class="perf-item">7D: <span class="perf-val ${getColor(perf.d7)}">${getSign(perf.d7)}${perf.d7}%</span></div>
-                        <div class="perf-item">14D: <span class="perf-val ${getColor(perf.d14)}">${getSign(perf.d14)}${perf.d14}%</span></div>
-                        <div class="perf-item">30D: <span class="perf-val ${getColor(perf.d30)}">${getSign(perf.d30)}${perf.d30}%</span></div>
-                    </div>
-
-                    <div class="risk-box">
-                        <div class="risk-header">
-                            <span>Risk Score</span>
-                            <span style="color:${riskColor}">${riskScore} / 100</span>
-                        </div>
-                        <div class="progress-bg">
-                            <div class="progress-fill" style="width:${riskScore}%; background:${riskColor}"></div>
-                        </div>
-                    </div>
-
-                    <div class="metrics">
-                        <div class="metric">
-                            <span class="m-label">RSI</span>
-                            <span class="m-val">${stock.rsi ? stock.rsi.toFixed(0) : '--'}</span>
-                        </div>
-                        <div class="metric">
-                            <span class="m-label">Beta</span>
-                            <span class="m-val">${stock.beta || 1.2}</span>
-                        </div>
-                        <div class="metric">
-                            <span class="m-label">Verdict</span>
-                            <span class="m-val" style="color:${riskColor}; font-size:0.8rem">${riskLabel}</span>
-                        </div>
-                    </div>
+                    <!-- Clean UI: No Risk Score Bar -->
                 </div>`;
             }).join('');
         }

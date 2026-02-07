@@ -222,7 +222,7 @@
         }
 
         .btn {
-            border: none; padding: 0 16px; border-radius: 8px; cursor: pointer;
+            border: none; padding: 0 14px; border-radius: 8px; cursor: pointer;
             font-weight: 700; font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; gap: 4px; white-space: nowrap;
             height: 36px;
         }
@@ -394,25 +394,8 @@
             .dashboard-grid.list-view .pokeball { width: 24px; height: 24px; border-width: 2px; }
         }
 
-        /* Mobile List */
-        @media (max-width: 768px) {
-            .dashboard-grid.list-view .card { flex-direction: column; align-items: stretch; padding: 12px 16px; gap: 0; position: relative; }
-            .dashboard-grid.list-view .card-top { width: 100%; justify-content: space-between; margin-bottom: 8px; display: flex; padding: 0; }
-            .dashboard-grid.list-view .stock-info { display: flex; align-items: center; gap: 8px; padding: 0; }
-            .dashboard-grid.list-view .market-tag { display: none; } 
-            .dashboard-grid.list-view .price-group { flex-direction: column; align-items: flex-end; }
-            .dashboard-grid.list-view .price-val { font-size: 1.2rem; }
-            .dashboard-grid.list-view .price-change { font-size: 0.85rem; margin: 0; }
-            .dashboard-grid.list-view .data-meta { display: none; }
-            .dashboard-grid.list-view .holdings-row { width: 100%; margin: 0; border: none; padding: 0; border-top: 1px dashed #e5e7eb; padding-top: 8px; justify-content: space-between; background: transparent; border-radius: 0; }
-            .dashboard-grid.list-view .holdings-input-group { gap: 6px; }
-            .dashboard-grid.list-view .shares-input { width: 90px; padding: 6px; font-size: 0.85rem; }
-            .dashboard-grid.list-view .holdings-label { display: block; font-size: 0.65rem; margin-bottom: 0; }
-            .dashboard-grid.list-view .holdings-val { font-size: 0.9rem; min-width: 80px; text-align: right; }
-            .dashboard-grid.list-view .delete-btn { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; background: #fff; border: 1px solid #e5e7eb; color: #9ca3af; font-size: 0.8rem; }
-            .dashboard-grid.list-view .delete-btn::before { content: '✕'; font-size: 0.9rem; }
-        }
-
+        /* Mobile List View - REMOVED, Using Standard Card View for Mobile */
+        
         .data-tools { max-width: 1200px; margin: 0 auto 20px auto; display: flex; gap: 10px; justify-content: flex-end; }
         .history-list { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
         .history-card { 
@@ -491,8 +474,12 @@
             .header-left { justify-content: center; }
             .control-panel { justify-content: center; width: 100%; }
             .control-panel input { width: 80px; }
+            
             .dashboard-grid { grid-template-columns: 1fr; } 
             .history-card { gap: 4px; } 
+            
+            /* FIX 2: Hide Toggle Button on Mobile */
+            #view-toggle-btn { display: none !important; }
         }
     </style>
 </head>
@@ -525,7 +512,7 @@
             </div>
             <div class="title-group">
                 <h1>Wall Street <span>Pika</span></h1>
-                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v6.9.3</span> <span id="api-status-top" class="api-status-text">Idle (0)</span></div>
+                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v6.9.2</span> <span id="api-status-top" class="api-status-text">Idle (0)</span></div>
             </div>
             <img src="pikaprofile.png" alt="Profile" class="profile-pic" onclick="playPika()" title="Click for Pika!" onerror="this.style.display='none'">
         </div>
@@ -588,12 +575,14 @@
              <div style="font-size:0.7rem; color:#9ca3af; font-weight:700;">STOCKS</div>
              <div class="toolbar-group">
                  <select class="refresh-select sort-select" id="sort-select" onchange="changeSort(this.value)">
-                     <option value="val_desc" selected>Val: High ↓</option>
-                     <option value="val_asc">Val: Low ↑</option>
+                     <option value="def">Sort: Def</option>
                      <option value="desc">Chg: High ↓</option>
                      <option value="asc">Chg: Low ↑</option>
+                     <option value="val_desc">Val: High ↓</option>
+                     <option value="val_asc">Val: Low ↑</option>
                  </select>
-                 <button class="tool-btn" onclick="toggleView()">
+                 <!-- FIX 3: Add ID for toggling -->
+                 <button class="tool-btn" id="view-toggle-btn" onclick="toggleView()">
                      <span style="font-size:1rem;">⊞</span> <span id="view-text">Card</span>
                  </button>
                  <!-- Snap Button In Toolbar -->
@@ -673,7 +662,7 @@
         let statusUpdateTimer = null;
 
         let currentSort = 'val_desc'; 
-        let currentView = 'grid'; // FORCED GRID
+        let currentView = 'grid'; // Default, enforced on load
 
         function toggleDebug() {
             document.body.classList.toggle('debug-mobile');
@@ -697,7 +686,7 @@
         }
 
         window.addEventListener('load', () => {
-            // FIX: Removed auto list view switch
+            // FIX: Enforce Grid View on Load
             currentView = 'grid';
             updateViewUI();
             startWelcomeCountdown();

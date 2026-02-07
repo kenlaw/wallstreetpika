@@ -48,8 +48,26 @@
             padding-bottom: 200px; 
             min-height: 100%;
             background: transparent;
-            position: relative; /* Context for absolute positioning if needed */
+            transition: max-width 0.3s ease, border 0.3s ease;
         }
+        
+        /* Debug Mobile */
+        body.debug-mobile {
+            max-width: 400px;
+            margin: 0 auto;
+            border-left: 1px solid #d1d5db;
+            border-right: 1px solid #d1d5db;
+            background-color: #fff;
+        }
+        #debug-toggle {
+            position: fixed; bottom: 20px; right: 20px;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(17, 24, 39, 0.8); color: #fff; border: none;
+            font-size: 1.2rem; cursor: pointer; z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0.3; transition: opacity 0.2s;
+        }
+        #debug-toggle:hover { opacity: 1; }
 
         /* --- WELCOME SCREEN --- */
         #welcome-screen {
@@ -75,7 +93,7 @@
             margin-top: 10px;
         }
 
-        /* --- MODAL (Fixed Positioning) --- */
+        /* --- MODAL --- */
         #data-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); z-index: 99999;
@@ -83,26 +101,15 @@
             backdrop-filter: blur(4px);
         }
         #data-modal.active { display: flex; }
-        
         .modal-content {
-            background: #fff; width: 90%; max-width: 500px;
-            padding: 24px; border-radius: 16px;
+            background: #fff; width: 90%; max-width: 500px; padding: 24px; border-radius: 16px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            position: relative;
-            animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @keyframes modalPop {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        
         .modal-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 12px; }
         .modal-text {
             width: 100%; height: 150px; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;
-            font-family: 'Roboto Mono', monospace; font-size: 0.8rem; resize: none; margin-bottom: 16px;
-            background: #f9fafb;
+            font-family: 'Roboto Mono', monospace; font-size: 0.8rem; resize: none; margin-bottom: 16px; background: #f9fafb;
         }
-        .modal-text:focus { outline: 2px solid var(--pika-yellow); border-color: transparent; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
 
         /* --- Header --- */
@@ -111,7 +118,7 @@
             margin: 0 auto 16px auto;
             background: #fff;
             border-radius: var(--radius);
-            padding: 20px;
+            padding: 16px 20px;
             box-shadow: var(--shadow);
             display: flex;
             justify-content: space-between;
@@ -143,10 +150,9 @@
         
         .subtitle { 
             font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; margin-top: 4px; 
-            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
         }
 
-        /* Profile Pic Style */
         .profile-pic {
             width: 48px;
             height: 48px;
@@ -162,30 +168,19 @@
 
         .control-panel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
-        /* Updated Info Group for Version & Status */
-        .info-group {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 4px;
-        }
-
+        /* Updated Version Tag Style */
         .version-tag {
             font-family: 'Roboto Mono', monospace; font-size: 0.75rem; color: #9ca3af; 
             background: #f9fafb; padding: 2px 6px; border-radius: 4px; border: 1px solid #e5e7eb; font-weight: 700;
-            line-height: 1; margin-bottom: 2px;
+            line-height: 1; 
         }
         
-        /* API Status Text Style */
+        /* API Status Text (Moved to Title area) */
         .api-status-text {
-            font-family: 'Roboto Mono', monospace; font-size: 0.6rem; 
-            color: #cbd5e1; /* Very light grey */
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
+            font-family: 'Roboto Mono', monospace; font-size: 0.65rem; 
+            color: #cbd5e1; font-weight: 500; text-transform: uppercase; white-space: nowrap;
         }
-        .api-status-text.active { 
-            color: #d97706; /* Dark Yellow/Orange */
-            font-weight: 700;
-        }
+        .api-status-text.active { color: #d97706; font-weight: 700; }
 
         select.refresh-select {
             background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 12px;
@@ -194,12 +189,21 @@
         }
         select.refresh-select:focus { border-color: var(--pika-yellow); }
 
-        input[type="text"], input[type="number"] {
+        /* FIX 2: Reduced Search Input Width to ~45px */
+        input[type="text"] {
+            background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 6px;
+            border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+            text-align: center; outline: none; transition: all 0.2s;
+            width: 45px; 
+        }
+        input:focus { border-color: var(--pika-yellow); background: #fff; }
+        
+        /* Number Input for Loan */
+        input[type="number"] {
             background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 12px;
             border-radius: 8px; font-size: 0.9rem; font-weight: 700;
             text-align: center; outline: none; transition: all 0.2s;
         }
-        input:focus { border-color: var(--pika-yellow); background: #fff; }
 
         .btn {
             border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;
@@ -219,23 +223,37 @@
         }
         .tab-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
 
+        /* --- ASSET PANEL --- */
         .asset-panel {
             max-width: 1200px; margin: 0 auto 24px auto;
             background: #1e293b; border-radius: var(--radius); padding: 20px; color: #fff;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            display: grid; grid-template-columns: repeat(3, 1fr);
             gap: 24px; align-items: start;
         }
         .ap-item { display: flex; flex-direction: column; gap: 6px; }
         .ap-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .ap-val { font-family: 'Roboto Mono', monospace; font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; }
         .ap-sub { font-size: 0.75rem; color: #94a3b8; font-family: 'Roboto Mono', monospace; font-weight: 600;}
+        
         .ap-input {
-            background: #ffffff; border: 2px solid #e5e7eb; color: #111827; width: 100%; max-width: 140px; padding: 10px;
-            text-align: left; border-radius: 8px; font-weight: 700; font-family: 'Roboto Mono', monospace;
+            background: #ffffff; border: 2px solid #e5e7eb; color: #111827; 
+            width: 100%; max-width: 140px; 
+            padding: 2px 8px; /* Slim padding */
+            height: 36px; /* Fixed Height */
+            text-align: left; border-radius: 8px; font-weight: 700; 
+            font-family: 'Roboto Mono', monospace; font-size: 0.9rem; 
         }
+        .ap-input:focus { border-color: var(--pika-yellow); outline: none; }
+
         .net-val { color: var(--pika-yellow); text-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
-        .snap-btn { background: #374151; color: #fff; border: 1px solid #475569; font-size: 0.8rem; padding: 8px 16px; border-radius: 8px; cursor: pointer; margin-top: 5px; width: 100%; font-weight: 600;}
+        .snap-btn { 
+            background: #374151; color: #fff; border: 1px solid #475569; 
+            font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; 
+            cursor: pointer; font-weight: 600; white-space: nowrap;
+            margin-left: auto; 
+        }
+        .snap-btn:hover { background: #475569; }
         
         .mask-text { filter: blur(4px); opacity: 0.6; pointer-events: none; user-select: none; }
         .view-section { display: none; } .view-section.active { display: block; }
@@ -247,12 +265,10 @@
             -webkit-overflow-scrolling: touch; scrollbar-width: none; 
         }
         .market-overview::-webkit-scrollbar { display: none; }
-        
         .market-card {
             background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
             padding: 10px 16px; min-width: 130px; flex-shrink: 0; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; box-shadow: var(--shadow);
-            transition: transform 0.2s;
+            display: flex; flex-direction: column; box-shadow: var(--shadow); transition: transform 0.2s;
         }
         .market-card:hover { transform: translateY(-2px); border-color: var(--pika-yellow); }
         .mc-name { font-size: 0.75rem; font-weight: 800; color: #1f2937; }
@@ -261,193 +277,128 @@
         .mc-change { font-size: 0.75rem; font-weight: 700; margin-top: 2px; }
 
         /* Mini Pokeball Loader */
-        .mini-loader {
-            position: absolute; inset: 0; background: rgba(255,255,255,0.9);
-            display: flex; justify-content: center; align-items: center; z-index: 10;
-            border-radius: 12px;
-        }
-        .mini-pokeball {
-            width: 20px; height: 20px; background: #fff;
-            border: 2px solid #333; border-radius: 50%;
-            position: relative; overflow: hidden;
-            animation: shake 1.5s infinite ease-in-out;
-        }
-        .mini-pokeball::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
-            background: #ef4444; border-bottom: 2px solid #333;
-        }
-        .mini-pokeball::after {
-            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 6px; height: 6px; background: #fff; border: 2px solid #333; border-radius: 50%; z-index: 2;
-        }
+        .mini-loader { position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; justify-content: center; align-items: center; z-index: 10; border-radius: 12px; }
+        .mini-pokeball { width: 20px; height: 20px; background: #fff; border: 2px solid #333; border-radius: 50%; position: relative; overflow: hidden; animation: shake 1.5s infinite ease-in-out; }
+        .mini-pokeball::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: #ef4444; border-bottom: 2px solid #333; }
+        .mini-pokeball::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; background: #fff; border: 2px solid #333; border-radius: 50%; z-index: 2; }
 
-        .ticker-container {
-            max-width: 1200px; margin: 0 auto 24px auto; background: #fff; border-radius: 50px;
-            padding: 4px; box-shadow: var(--shadow); border: 1px solid #e5e7eb;
-            height: 40px; display: flex; align-items: center; overflow: hidden;
-        }
+        .ticker-container { max-width: 1200px; margin: 0 auto 24px auto; background: #fff; border-radius: 50px; padding: 4px; box-shadow: var(--shadow); border: 1px solid #e5e7eb; height: 40px; display: flex; align-items: center; overflow: hidden; }
         .ticker-left-group { display: flex; align-items: center; gap: 6px; padding-left: 4px; margin-right: 10px; z-index: 2; background: #fff; }
-        .ticker-label {
-            background: var(--pika-yellow); color: #422006; font-size: 0.7rem; font-weight: 800;
-            padding: 0 12px; height: 30px; border-radius: 40px; display: flex; align-items: center;
-            flex-shrink: 0;
-        }
-        .sound-btn {
-            background: #fef08a; border: 1px solid #facc15; color: #422006; width: 30px; height: 30px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: transform 0.1s;
-        }
+        .ticker-label { background: var(--pika-yellow); color: #422006; font-size: 0.7rem; font-weight: 800; padding: 0 12px; height: 30px; border-radius: 40px; display: flex; align-items: center; flex-shrink: 0; }
+        .sound-btn { background: #fef08a; border: 1px solid #facc15; color: #422006; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: transform 0.1s; }
         .sound-btn:active { transform: scale(0.9); }
         .ticker-content { white-space: nowrap; animation: marquee 120s linear infinite; }
         .ticker-item { display: inline-block; margin-right: 30px; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-        /* --- DASHBOARD TOOLBAR --- */
-        .dashboard-toolbar {
-            max-width: 1200px; margin: 0 auto 16px auto;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        /* Toolbar */
+        .dashboard-toolbar { max-width: 1200px; margin: 0 auto 16px auto; display: flex; justify-content: space-between; align-items: center; }
         .toolbar-group { display: flex; gap: 8px; }
-        .tool-btn {
-            background: #fff; border: 1px solid #d1d5db; border-radius: 8px;
-            padding: 6px 12px; font-size: 0.75rem; font-weight: 700; color: #4b5563;
-            cursor: pointer; display: flex; align-items: center; gap: 4px;
-            transition: all 0.2s;
-        }
+        .tool-btn { background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 6px 12px; font-size: 0.75rem; font-weight: 700; color: #4b5563; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
         .tool-btn:hover { background: #f9fafb; color: var(--text-primary); border-color: #9ca3af; }
         .tool-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
 
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
         
-        /* --- LIST VIEW STYLES (DESKTOP) --- */
-        .dashboard-grid.list-view {
-            grid-template-columns: 1fr; gap: 8px;
-        }
-        
-        /* Desktop List View - Horizontal Layout */
-        @media (min-width: 769px) {
-            .dashboard-grid.list-view .card {
-                flex-direction: row; 
-                align-items: center; 
-                padding: 6px 20px; 
-                gap: 20px;
-                justify-content: space-between;
-                min-height: 64px; 
-            }
-            .dashboard-grid.list-view .card-top {
-                padding: 0; width: auto; 
-                flex: 1; 
-                display: flex; align-items: center; justify-content: flex-start; gap: 20px;
-            }
-            .dashboard-grid.list-view .stock-info {
-                display: flex; align-items: center; gap: 12px; padding: 0; min-width: 160px;
-            }
-            .dashboard-grid.list-view .stock-info h2 { font-size: 1.2rem; margin: 0; }
-            .dashboard-grid.list-view .market-tag { display: inline-block; font-size: 0.65rem; padding: 2px 6px; margin: 0; }
+        /* --- LIST VIEW STYLES --- */
+        .dashboard-grid.list-view { display: flex; flex-direction: column; gap: 8px; }
+        .dashboard-grid.list-view .card { min-height: auto; }
 
-            .dashboard-grid.list-view .price-group {
-                display: flex; align-items: center; gap: 15px; 
-                text-align: left;
-            }
+        /* Desktop List */
+        @media (min-width: 769px) {
+            .dashboard-grid.list-view .card { flex-direction: row; align-items: center; padding: 10px 20px; gap: 20px; justify-content: space-between; }
+            .dashboard-grid.list-view .card-top { padding: 0; width: auto; flex: 1; display: flex; align-items: center; justify-content: flex-start; gap: 20px; }
+            .dashboard-grid.list-view .stock-info { display: flex; align-items: center; gap: 12px; padding: 0; min-width: 160px; }
+            .dashboard-grid.list-view .stock-info h2 { font-size: 1.2rem; margin: 0; }
+            .dashboard-grid.list-view .market-tag { display: none; }
+            .dashboard-grid.list-view .price-group { display: flex; flex-direction: row; align-items: center; gap: 15px; text-align: left; }
             .dashboard-grid.list-view .price-val { font-size: 1.1rem; margin: 0; }
             .dashboard-grid.list-view .price-change { font-size: 0.85rem; margin: 0; }
             .dashboard-grid.list-view .data-meta { display: block; margin: 0; }
             .dashboard-grid.list-view .data-time { font-size: 0.6rem; color: #9ca3af; white-space: nowrap;}
             .dashboard-grid.list-view .stale-badge { display: none; }
-
-            .dashboard-grid.list-view .holdings-row {
-                width: auto; border: none; padding: 0; margin: 0; 
-                background: transparent;
-                flex-direction: row; align-items: center; gap: 10px;
-                margin-right: 30px; 
-            }
+            .dashboard-grid.list-view .holdings-row { width: auto; border: none; padding: 0; margin: 0; background: transparent; flex-direction: row; align-items: center; gap: 10px; margin-right: 40px; }
             .dashboard-grid.list-view .holdings-input-group { gap: 6px; }
             .dashboard-grid.list-view .shares-input { width: 90px; padding: 4px; font-size: 0.85rem; }
             .dashboard-grid.list-view .holdings-label { display: none; }
-            .dashboard-grid.list-view .holdings-val { font-size: 1rem; min-width: 90px; text-align: right; }
-
-            /* FIX 2: Desktop List View - Clean X Button (No Duplicate Icon) */
-            .dashboard-grid.list-view .delete-btn {
-                position: static; transform: none; width: 32px; height: 32px; 
-                background: transparent; border: none; color: #9ca3af; border-radius: 6px;
-                display: flex; align-items: center; justify-content: center;
-                font-size: 1.2rem; /* Clean X */
-            }
+            .dashboard-grid.list-view .holdings-val { font-size: 1rem; min-width: 100px; text-align: right; }
+            .dashboard-grid.list-view .delete-btn { position: static; transform: none; width: 32px; height: 32px; background: transparent; border: none; color: #9ca3af; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+            .dashboard-grid.list-view .delete-btn::before { content: '✕'; font-size: 1rem; } 
             .dashboard-grid.list-view .delete-btn:hover { background: #fee2e2; color: #ef4444; }
-
-            .dashboard-grid.list-view .loader {
-                flex-direction: row; gap: 12px; background: rgba(255,255,255,0.95);
-            }
+            .dashboard-grid.list-view .loader { flex-direction: row; gap: 12px; background: rgba(255,255,255,0.95); }
             .dashboard-grid.list-view .pokeball { width: 24px; height: 24px; border-width: 2px; }
         }
 
-        /* --- MOBILE List View Overrides (< 768px) --- */
-        /* FIX 1: RESTORED V4.6 STYLE (Stacked Card) */
+        /* Mobile List */
         @media (max-width: 768px) {
-            .dashboard-grid.list-view {
-                display: grid; /* Back to grid for better spacing */
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .dashboard-grid.list-view .card {
-                flex-direction: column; 
-                align-items: stretch; 
-                padding: 12px 16px; 
-                gap: 0;
-                position: relative;
-            }
-            
-            .dashboard-grid.list-view .card-top {
-                width: 100%; justify-content: space-between; margin-bottom: 8px; display: flex; padding: 0;
-            }
-            
-            .dashboard-grid.list-view .stock-info {
-                display: flex; align-items: center; gap: 8px; padding: 0;
-            }
-            
-            /* Hide desktop specific elements on mobile list */
+            .dashboard-grid.list-view .card { flex-direction: column; align-items: stretch; padding: 12px 16px; gap: 0; position: relative; }
+            .dashboard-grid.list-view .card-top { width: 100%; justify-content: space-between; margin-bottom: 8px; display: flex; padding: 0; }
+            .dashboard-grid.list-view .stock-info { display: flex; align-items: center; gap: 8px; padding: 0; }
             .dashboard-grid.list-view .market-tag { display: none; } 
-            
-            .dashboard-grid.list-view .price-group {
-                flex-direction: column; align-items: flex-end;
-            }
-            
+            .dashboard-grid.list-view .price-group { flex-direction: column; align-items: flex-end; }
+            .dashboard-grid.list-view .price-val { font-size: 1.2rem; }
+            .dashboard-grid.list-view .price-change { font-size: 0.85rem; margin: 0; }
             .dashboard-grid.list-view .data-meta { display: none; }
-            
-            .dashboard-grid.list-view .holdings-row {
-                width: 100%; margin: 0; border: none; padding: 0; 
-                border-top: 1px dashed #e5e7eb; padding-top: 8px;
-                justify-content: space-between; background: transparent;
-                border-radius: 0;
-            }
-            
+            .dashboard-grid.list-view .holdings-row { width: 100%; margin: 0; border: none; padding: 0; border-top: 1px dashed #e5e7eb; padding-top: 8px; justify-content: space-between; background: transparent; border-radius: 0; }
             .dashboard-grid.list-view .holdings-input-group { gap: 6px; }
             .dashboard-grid.list-view .shares-input { width: 90px; padding: 6px; font-size: 0.85rem; }
             .dashboard-grid.list-view .holdings-label { display: block; font-size: 0.65rem; margin-bottom: 0; }
             .dashboard-grid.list-view .holdings-val { font-size: 0.9rem; min-width: 80px; text-align: right; }
-            
-            .dashboard-grid.list-view .delete-btn {
-                 position: absolute; top: -10px; right: -8px; width: 24px; height: 24px;
-                 background: #fff; border: 1px solid #e5e7eb; border-radius: 50%;
-                 font-size: 0.9rem;
-            }
+            .dashboard-grid.list-view .delete-btn { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; background: #fff; border: 1px solid #e5e7eb; color: #9ca3af; font-size: 0.8rem; }
+            .dashboard-grid.list-view .delete-btn::before { content: '✕'; font-size: 0.9rem; }
         }
 
         .data-tools { max-width: 1200px; margin: 0 auto 20px auto; display: flex; gap: 10px; justify-content: flex-end; }
-        .history-list { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-        .history-card { background: #fff; border-radius: 12px; padding: 16px 20px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow); }
-        .h-time { font-size: 0.8rem; color: #6b7280; font-weight: 600; min-width: 120px; }
-        .h-stats { display: flex; gap: 20px; flex: 1; align-items: center; }
-        .h-stat-item { display: flex; flex-direction: column; }
+        
+        /* --- HISTORY V5.8 Fix: 4 Rows Stack --- */
+        .history-list { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+        
+        .history-card { 
+            background: #fff; border-radius: 12px; padding: 14px 16px; border: 1px solid #e5e7eb; 
+            display: flex; flex-direction: column; gap: 8px; /* Vertical Stack */
+            box-shadow: var(--shadow); position: relative;
+        }
+
+        /* Row 1: Time + Lev */
+        .h-row-top {
+            width: 100%; border-bottom: 1px solid #f3f4f6; padding-bottom: 6px; margin-bottom: 2px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .h-time { font-size: 0.85rem; color: #374151; font-weight: 700; font-family: 'Roboto Mono', monospace; }
+        /* FIX 1: Lev moved to top right */
+        .h-lev { font-size: 0.8rem; color: #9ca3af; font-weight: 600; }
+        
+        /* Row 2: Net Asset */
+        .h-row-net { display: flex; justify-content: space-between; align-items: center; }
         .h-label { font-size: 0.65rem; color: #9ca3af; text-transform: uppercase; font-weight: 700; }
-        .h-val { font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 1rem; color: var(--text-primary); }
+        .h-val { font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); }
         .h-val.net { color: #059669; }
-        .h-actions { display: flex; gap: 10px; align-items: center; }
-        .h-details { width: 100%; border-top: 1px dashed #e5e7eb; margin-top: 10px; padding-top: 10px; display: none; }
+
+        /* Row 3: Buttons (now is Row 3, since Lev row removed) */
+        .h-row-btns { 
+            display: flex; justify-content: space-between; align-items: center; margin-top: 6px;
+            padding-top: 8px; border-top: 1px dashed #f3f4f6;
+        }
+        
+        /* FIX 2: History Buttons Style */
+        .toggle-btn { 
+            background: transparent; border: none; color: #6b7280; 
+            font-size: 1.2rem; cursor: pointer; padding: 4px;
+        }
+        .toggle-btn::after { content: '▼'; } 
+        
+        .del-hist-btn { 
+            background: transparent; border: none; color: #ef4444; 
+            font-size: 1.2rem; cursor: pointer; padding: 4px;
+        }
+        .del-hist-btn::after { content: '✕'; } 
+
+        /* History Details */
+        .h-details { width: 100%; background: #f9fafb; padding: 10px; border-radius: 8px; margin-top: 8px; display: none; }
         .history-card.open .h-details { display: block; }
-        .h-stock-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; border-bottom: 1px solid #f9fafb; }
-        .toggle-btn { background: none; border: none; color: #6b7280; cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
-        .del-hist-btn { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.75rem; }
+        .h-stock-list { display: flex; flex-direction: column; gap: 4px; }
+        .h-stock-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; border-bottom: 1px dashed #e5e7eb; }
+
 
         /* Card */
         .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid #e5e7eb; box-shadow: var(--shadow); transition: transform 0.2s; position: relative; display: flex; flex-direction: column; overflow: visible; min-height: auto; }
@@ -490,10 +441,13 @@
             .header-left { justify-content: center; }
             .control-panel { justify-content: center; width: 100%; }
             .control-panel input { width: 80px; }
-            .asset-panel { grid-template-columns: 1fr; gap: 16px; }
+            .asset-panel { grid-template-columns: 1fr 1fr; gap: 16px; }
             .asset-panel .ap-item:nth-child(3) { grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 4px; }
             .dashboard-grid { grid-template-columns: 1fr; } 
-            .h-stats { flex-direction: column; gap: 8px; }
+            
+            /* Mobile History */
+            .history-card { gap: 4px; } /* Tighten spacing */
+            
         }
     </style>
 </head>
@@ -505,7 +459,7 @@
         <div id="countdown-text" class="countdown-text">Entering in 8...</div>
     </div>
 
-    <!-- NEW: Data Import/Export Modal -->
+    <!-- Data Modal -->
     <div id="data-modal">
         <div class="modal-content">
             <div class="modal-title">Backup / Restore</div>
@@ -526,17 +480,12 @@
             </div>
             <div class="title-group">
                 <h1>Wall Street <span>Pika</span></h1>
-                <div class="subtitle">Mini Stock Dashboard</div>
+                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v5.8</span> <span id="api-status-top" class="api-status-text">Idle</span></div>
             </div>
             <img src="pikaprofile.png" alt="Profile" class="profile-pic" onclick="playPika()" title="Click for Pika!" onerror="this.style.display='none'">
         </div>
 
         <div class="control-panel">
-            <div class="info-group">
-                <span class="version-tag">v5.2</span>
-                <span id="api-status-top" class="api-status-text">Idle</span>
-            </div>
-            
             <div id="global-status"></div>
             <select class="refresh-select" id="refresh-rate" onchange="changeRefreshRate(this.value)">
                 <option value="60000" selected>⏱️ 1m</option>
@@ -547,8 +496,9 @@
                 <option value="0">⏱️ STOP</option>
             </select>
             <button class="btn btn-privacy" id="privacy-btn" onclick="togglePrivacy()" title="Privacy Mode">👁️</button>
-            <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline">BIBLE</a>
-            <input type="text" id="new-stock-input" placeholder="CODE" maxlength="5" onkeyup="if(event.key === 'Enter') addNewStock()">
+            <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline">📖</a>
+            <!-- FIX 2: Reduced Search Input -->
+            <input type="text" id="new-stock-input" placeholder="🔍" maxlength="5" onkeyup="if(event.key === 'Enter') addNewStock()" style="width: 45px;">
             <button class="btn btn-primary" onclick="addNewStock()">+</button>
         </div>
     </header>
@@ -568,14 +518,15 @@
             <div class="ap-item">
                 <span class="ap-label">Loan (HKD)</span>
                 <input type="number" id="loan-input" class="ap-input" placeholder="0" onchange="updateLoan(this.value)">
+                <!-- FIX for Align: Lev under Loan -->
+                <span class="ap-sub" id="lev-display" style="margin-top:4px;">Lev: --</span>
             </div>
-            <div class="ap-item">
-                <span class="ap-label">Net Equity</span>
-                <span class="ap-val net-val p-mask" id="net-value">HK$ --</span>
-                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                    <span class="ap-sub" id="lev-display">Lev: --</span>
-                    <button class="snap-btn" onclick="event.stopPropagation(); takeSnapshot()">📷 Snap</button>
+            <div class="ap-item full-row">
+                <div class="ap-left" style="display:flex; flex-direction:column;">
+                    <span class="ap-label">Net Equity</span>
+                    <span class="ap-val net-val p-mask" id="net-value">HK$ --</span>
                 </div>
+                <button class="snap-btn" onclick="event.stopPropagation(); takeSnapshot()">📷 Snap</button>
             </div>
         </div>
 
@@ -588,7 +539,7 @@
                      <span style="font-size:1rem;">⇅</span> <span id="sort-text">Def</span>
                  </button>
                  <button class="tool-btn" onclick="toggleView()">
-                     <span style="font-size:1rem;">⊞</span> <span id="view-text">Grid</span>
+                     <span style="font-size:1rem;">⊞</span> <span id="view-text">Card</span>
                  </button>
              </div>
         </div>
@@ -605,11 +556,10 @@
 
     <div id="view-history" class="view-section">
         <div class="data-tools">
-            <button class="btn btn-outline" onclick="exportDataString()">📋 Copy Code</button>
-            <button class="btn btn-outline" onclick="importDataString()">📋 Paste Code</button>
-            
-            <button class="btn btn-outline" onclick="exportData()">⬇️ Export File</button>
-            <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆️ Import File</button>
+            <button class="btn btn-outline" onclick="exportDataString()">📋 Copy</button>
+            <button class="btn btn-outline" onclick="importDataString()">📋 Paste</button>
+            <button class="btn btn-outline" onclick="exportData()">⬇️ File</button>
+            <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆️ File</button>
             <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(this)">
         </div>
         <div class="history-list" id="history-container"></div>
@@ -619,11 +569,10 @@
         Mini Stock Dashboard
     </div>
 
+    <button id="debug-toggle" onclick="toggleDebug()">📱</button>
+
     <script>
-        // Move modal to bottom of body to avoid stacking issues
-        document.addEventListener('DOMContentLoaded', () => {
-             document.body.appendChild(document.getElementById('data-modal'));
-        });
+        document.addEventListener('DOMContentLoaded', () => { document.body.appendChild(document.getElementById('data-modal')); });
 
         const API_KEY = 'd62qgopr01qnpu82ah0gd62qgopr01qnpu82ah10';
         const STORAGE_KEY = 'pika_dashboard_stable_v1';
@@ -668,6 +617,10 @@
 
         let currentSort = 'def'; 
         let currentView = window.innerWidth <= 768 ? 'list' : 'grid';
+
+        function toggleDebug() {
+            document.body.classList.toggle('debug-mobile');
+        }
 
         function startWelcomeCountdown() {
             let count = 8;
@@ -740,14 +693,57 @@
 
         function updateGlobalStatus() {
             const state = getMarketState();
-            const el = document.getElementById('global-status');
-            if(el) el.innerHTML = `<span class="market-badge ${state.color}">${state.label}</span>`;
+            // FIX 3: Removed text update for global status
         }
 
-        // FIX 4: String Export/Import
+        // FIX 2: Render History Split Lines
+        function renderMarketOverview() {
+            const el = document.getElementById('market-overview');
+            if (!el) return;
+            el.innerHTML = MARKET_SYMBOLS.map(m => {
+                const d = marketOverviewData[m.s];
+                const isLoading = !d || d.price === 0;
+                const isError = d && d.error;
+                
+                let content = '';
+                if (isLoading) {
+                    content = `
+                        <div class="mini-loader">
+                            <div class="mini-pokeball"></div>
+                        </div>
+                        <span class="mc-name">${m.n}</span>
+                        <span class="mc-price" style="opacity:0">--</span>
+                        <span class="mc-change" style="opacity:0">--</span>
+                    `;
+                } else if (isError) {
+                    content = `
+                        <span class="mc-name">${m.n}</span>
+                        <span class="mc-price" style="color:#9ca3af">-</span>
+                        <span class="mc-change" style="color:#9ca3af">-</span>
+                    `;
+                } else {
+                    const p = d.price;
+                    const c = d.change;
+                    const col = c >= 0 ? 'text-up' : 'text-down';
+                    const sign = c >= 0 ? '+' : '';
+                    content = `
+                        <span class="mc-name">${m.n}</span>
+                        <span class="mc-price">${p.toFixed(2)}</span>
+                        <span class="mc-change ${col}">${sign}${c.toFixed(2)}%</span>
+                    `;
+                }
+                
+                return `
+                    <div class="market-card">
+                        ${content}
+                    </div>
+                `;
+            }).join('');
+        }
+
         function exportDataString() {
             const data = {
-                version: "5.2",
+                version: "5.5",
                 date: new Date().toISOString(),
                 stocks: marketData,
                 loan: loanAmount,
@@ -829,7 +825,7 @@
 
         function exportData() {
             const data = {
-                version: "5.2",
+                version: "5.5",
                 date: new Date().toISOString(),
                 stocks: marketData,
                 loan: loanAmount,
@@ -923,7 +919,6 @@
                     snapshots = saved.snapshots || [];
                     isPrivacy = saved.privacy || false;
                     refreshInterval = saved.refreshRate || 60000;
-                    
                     marketData.forEach(s => { s.loading = true; });
                 }
             } else {
@@ -947,7 +942,6 @@
             render();
             MARKET_SYMBOLS.forEach(m => { marketOverviewData[m.s] = { price: 0, change: 0 }; });
             renderMarketOverview();
-            
             fetchFxRate();
             startQueueSystem(); 
         }
@@ -1068,9 +1062,9 @@
             const now = Date.now();
             if (nextFetchTime > now) {
                 const diff = Math.ceil((nextFetchTime - now) / 1000);
-                el.innerText = `Idle (${diff}s)`;
+                el.innerText = `Idle (${diff})`;
             } else {
-                el.innerText = 'Idle (0s)';
+                el.innerText = 'Idle (0)';
             }
         }
 
@@ -1223,7 +1217,8 @@
 
             const totalEl = document.getElementById('total-assets');
             const netEl = document.getElementById('net-value');
-            
+            const levEl = document.getElementById('lev-display');
+
             if (isPrivacy) {
                 totalEl.innerText = "HK$ ****";
                 netEl.innerText = "HK$ ****";
@@ -1237,7 +1232,6 @@
             }
             
             const levStr = lev === 999 ? "Risk" : lev.toFixed(2) + "x";
-            const levEl = document.getElementById('lev-display');
             levEl.innerText = "Lev: " + levStr;
             
             if(lev > 1.5) levEl.style.color = '#f87171'; 
@@ -1280,7 +1274,8 @@
 
         function deleteSnapshot(id) {
             if(!confirm('Delete this record?')) return;
-            snapshots = snapshots.filter(s => s.id !== id);
+            // FIX 1: Loose equality for robustness against JSON strings
+            snapshots = snapshots.filter(s => s.id != id);
             saveData();
             renderHistory();
         }
@@ -1303,86 +1298,53 @@
                 container.innerHTML = '<div style="text-align:center; color:#9ca3af; padding:40px;">No snapshots yet.</div>';
                 return;
             }
-            container.innerHTML = snapshots.map(s => `
+            container.innerHTML = snapshots.map(s => {
+                // FIX 2: Split time into Date and Time spans
+                const [datePart, timePart] = s.time.split(' ');
+                
+                return `
                 <div class="history-card" onclick="this.classList.toggle('open')">
-                    <div class="h-time">${s.time}</div>
-                    <div class="h-stats">
-                        <div class="h-stat-item">
-                            <span class="h-label">Net Asset</span>
-                            <span class="h-val net">HK$ ${s.net}</span>
-                        </div>
-                        <div class="h-stat-item">
-                            <span class="h-label">Lev</span>
-                            <span class="h-val" style="font-size:0.9rem">${s.lev || '-'}</span>
-                        </div>
+                    <!-- Row 1: Time & Lev (FIX 1) -->
+                    <div class="h-row-top">
+                        <span class="h-time">${datePart} <span style="font-weight:400; color:#9ca3af;">${timePart}</span></span>
+                        <span class="h-lev">${s.lev || '-'}</span>
                     </div>
-                    <div class="h-actions">
-                        <button class="toggle-btn">Details</button>
-                        <button class="del-hist-btn" onclick="event.stopPropagation(); deleteSnapshot(${s.id})">✕</button>
+
+                    <!-- Row 2: Net Asset -->
+                    <div class="h-row-net">
+                        <span class="h-label">Net Asset</span>
+                        <span class="h-val net">HK$ ${s.net}</span>
                     </div>
+
+                    <!-- Row 3: Buttons -->
+                    <div class="h-row-btns">
+                        <button class="toggle-btn" onclick="event.stopPropagation(); this.closest('.history-card').classList.toggle('open')"></button>
+                        <button class="del-hist-btn" onclick="event.stopPropagation(); deleteSnapshot(${s.id})"></button>
+                    </div>
+
                     <div class="h-details" onclick="event.stopPropagation()">
-                        <div class="h-stock-row" style="font-weight:700; color:#6b7280;">
-                            <span>Stock</span><span>Price(USD)</span><span>Shares</span>
+                        <div class="h-stock-list">
+                            ${s.details.map(d => `
+                                <div class="h-stock-row">
+                                    <span style="font-weight:700;">${d.sym}</span>
+                                    <span>$${d.price.toFixed(2)}</span>
+                                    <span>${d.shares} sh</span>
+                                </div>
+                            `).join('')}
                         </div>
-                        ${s.details.map(d => `
-                            <div class="h-stock-row">
-                                <span>${d.sym}</span>
-                                <span>$${d.price.toFixed(2)}</span>
-                                <span>${d.shares}</span>
+                        <div style="border-top:1px dashed #e5e7eb; margin-top:8px; padding-top:8px;">
+                            <div class="h-stock-row" style="color:#6b7280;">
+                                <span>Total Asset</span>
+                                <span>HK$ ${s.total}</span>
                             </div>
-                        `).join('')}
-                        <div class="h-stock-row" style="margin-top:8px; font-weight:700;">
-                            <span>Loan</span><span></span><span>- HK$ ${s.loan}</span>
+                            <div class="h-stock-row" style="color:#ef4444;">
+                                <span>Loan</span>
+                                <span>- HK$ ${s.loan}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            `).join('');
-        }
-
-        // Updated Render Market Overview with Mini Pokeball Logic
-        function renderMarketOverview() {
-            const el = document.getElementById('market-overview');
-            if (!el) return;
-            el.innerHTML = MARKET_SYMBOLS.map(m => {
-                const d = marketOverviewData[m.s];
-                // Check if loading or error
-                const isLoading = !d || d.price === 0;
-                const isError = d && d.error;
-                
-                let content = '';
-                if (isLoading) {
-                    content = `
-                        <div class="mini-loader">
-                            <div class="mini-pokeball"></div>
-                        </div>
-                        <span class="mc-name">${m.n}</span>
-                        <span class="mc-price" style="opacity:0">--</span>
-                        <span class="mc-change" style="opacity:0">--</span>
-                    `;
-                } else if (isError) {
-                    content = `
-                        <span class="mc-name">${m.n}</span>
-                        <span class="mc-price" style="color:#9ca3af">-</span>
-                        <span class="mc-change" style="color:#9ca3af">-</span>
-                    `;
-                } else {
-                    const p = d.price;
-                    const c = d.change;
-                    const col = c >= 0 ? 'text-up' : 'text-down';
-                    const sign = c >= 0 ? '+' : '';
-                    content = `
-                        <span class="mc-name">${m.n}</span>
-                        <span class="mc-price">${p.toFixed(2)}</span>
-                        <span class="mc-change ${col}">${sign}${c.toFixed(2)}%</span>
-                    `;
-                }
-                
-                return `
-                    <div class="market-card">
-                        ${content}
-                    </div>
-                `;
-            }).join('');
+            `}).join('');
         }
 
         // --- NEW: View & Sort Logic ---
@@ -1405,7 +1367,7 @@
 
         function updateViewUI() {
             const icon = currentView === 'grid' ? '⊞' : '☰';
-            const text = currentView === 'grid' ? 'Grid' : 'List';
+            const text = currentView === 'grid' ? 'Card' : 'List';
             const btn = document.getElementById('view-text');
             if(btn) {
                 btn.innerText = text;
@@ -1448,15 +1410,8 @@
                 
                 let timeHtml = `<div class="data-meta"><span class="data-time">Update: ${timeDisplay} ET</span></div>`;
                 if (stock.isStale) {
-                    if (state.code !== 'CLOSED') {
-                        timeHtml = `
-                        <div class="data-meta">
-                            <span class="stale-badge">⚠️ Waiting for trade</span>
-                            <span class="data-time">Last: ${timeDisplay}</span>
-                        </div>`;
-                    } else {
-                        timeHtml = `<div class="data-meta"><span class="data-time">Closed: ${timeDisplay}</span></div>`;
-                    }
+                    // FIX 3: Removed specific market status text check, simplified logic
+                     timeHtml = `<div class="data-meta"><span class="data-time">Closed: ${timeDisplay}</span></div>`;
                 }
 
                 const shares = stock.shares || 0;
@@ -1475,7 +1430,8 @@
                     </div>` : '';
 
                 // MARKET TAG for LIST VIEW (Desktop)
-                const marketTagHtml = `<span class="market-tag ${state.color}">${state.code}</span>`;
+                // FIX 3: Removed market status text (e.g. PRE-MARKET) from list view as well by not generating it
+                const marketTagHtml = ''; 
 
                 return `
                 <div class="card">

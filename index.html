@@ -243,7 +243,7 @@
         }
         .tab-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
 
-        /* --- ASSET PANEL --- */
+        /* --- ASSET PANEL V6.9.1 (Layout Fixed) --- */
         .asset-panel {
             max-width: 1200px; margin: 0 auto 24px auto;
             background: #1e293b; border-radius: var(--radius); padding: 20px; color: #fff;
@@ -269,10 +269,10 @@
         }
         .ap-input:focus { border-color: var(--pika-yellow); outline: none; }
         
-        /* Snap Button In Toolbar */
+        /* Snap Button - In Toolbar now */
         .snap-btn { 
             background: var(--pika-yellow); color: #422006; border: none;
-            font-size: 0.75rem; padding: 0 12px; border-radius: 8px; height: 36px; 
+            font-size: 0.75rem; padding: 0 12px; border-radius: 8px; height: 36px;
             cursor: pointer; font-weight: 700; white-space: nowrap;
             display: flex; align-items: center; gap: 4px;
         }
@@ -282,8 +282,7 @@
         @media (min-width: 769px) {
             .asset-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
             .ap-item { flex-direction: column; }
-            /* Desktop view: Label & Lev on same row */
-            .ap-left-col { flex-direction: row; align-items: baseline; gap: 8px; }
+            .ap-left-col { flex-direction: column; align-items: flex-start; gap: 6px; }
             .ap-right-col { width: 100%; justify-content: flex-start; margin-top: 4px; }
             .ap-val { font-size: 1.5rem; }
         }
@@ -305,7 +304,7 @@
             
             .ap-label { margin-bottom: 0; }
             
-            /* FIX: Remove border-top, padding-top, margin-top from 3rd item */
+            /* V6.9.1: No border/margin/padding for Net Equity Row */
             .asset-panel .ap-item:nth-child(3) { 
                 border-top: none; 
                 padding-top: 0; 
@@ -389,29 +388,68 @@
             .dashboard-grid.list-view .holdings-label { display: none; }
             .dashboard-grid.list-view .holdings-val { font-size: 1rem; min-width: 100px; text-align: right; }
             .dashboard-grid.list-view .delete-btn { position: static; transform: none; width: 32px; height: 32px; background: transparent; border: none; color: #9ca3af; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-            /* FIX: Clean Single Cross */
-            .dashboard-grid.list-view .delete-btn::before { content: none !important; } 
+            .dashboard-grid.list-view .delete-btn::before { content: '✕'; font-size: 1rem; } 
             .dashboard-grid.list-view .delete-btn:hover { background: #fee2e2; color: #ef4444; }
             .dashboard-grid.list-view .loader { flex-direction: row; gap: 12px; background: rgba(255,255,255,0.95); }
             .dashboard-grid.list-view .pokeball { width: 24px; height: 24px; border-width: 2px; }
         }
 
         /* Mobile List */
+        /* FIX 1: Mobile List View - Single Row Forced */
         @media (max-width: 768px) {
-            .dashboard-grid.list-view .card { flex-direction: column; align-items: stretch; padding: 12px 16px; gap: 0; position: relative; }
-            .dashboard-grid.list-view .card-top { width: 100%; justify-content: space-between; margin-bottom: 8px; display: flex; padding: 0; }
-            .dashboard-grid.list-view .stock-info { display: flex; align-items: center; gap: 8px; padding: 0; }
+            .dashboard-grid.list-view .card { 
+                display: grid; 
+                /* Code(min 60) | Price(auto) | Input(auto) | Del(24) */
+                grid-template-columns: 70px 1fr 90px 30px; 
+                align-items: center; padding: 10px 12px; gap: 4px; height: 50px;
+                flex-direction: row; /* reset */
+            }
+            /* Ungroup containers */
+            .dashboard-grid.list-view .card-top,
+            .dashboard-grid.list-view .holdings-row {
+                 display: contents; 
+                 border: none; margin: 0; padding: 0;
+            }
+            
+            /* 1. Code */
+            .dashboard-grid.list-view .stock-info {
+                grid-column: 1 / 2;
+                display: flex; align-items: center; padding: 0;
+                overflow: hidden;
+            }
+            .dashboard-grid.list-view .stock-info h2 { 
+                font-size: 1rem; margin: 0; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            }
             .dashboard-grid.list-view .market-tag { display: none; } 
-            .dashboard-grid.list-view .price-group { flex-direction: column; align-items: flex-end; }
-            .dashboard-grid.list-view .price-val { font-size: 1.2rem; }
-            .dashboard-grid.list-view .price-change { font-size: 0.85rem; margin: 0; }
+            
+            /* 2. Price */
+            .dashboard-grid.list-view .price-group {
+                grid-column: 2 / 3;
+                display: flex; flex-direction: column; align-items: flex-end; 
+                margin: 0; padding-right: 4px;
+            }
+            .dashboard-grid.list-view .price-val { font-size: 1rem; line-height: 1.1; }
+            .dashboard-grid.list-view .price-change { font-size: 0.7rem; margin: 0; display: block; line-height: 1.1; }
             .dashboard-grid.list-view .data-meta { display: none; }
-            .dashboard-grid.list-view .holdings-row { width: 100%; margin: 0; border: none; padding: 0; border-top: 1px dashed #e5e7eb; padding-top: 8px; justify-content: space-between; background: transparent; border-radius: 0; }
-            .dashboard-grid.list-view .holdings-input-group { gap: 6px; }
-            .dashboard-grid.list-view .shares-input { width: 90px; padding: 6px; font-size: 0.85rem; }
-            .dashboard-grid.list-view .holdings-label { display: block; font-size: 0.65rem; margin-bottom: 0; }
-            .dashboard-grid.list-view .holdings-val { font-size: 0.9rem; min-width: 80px; text-align: right; }
-            .dashboard-grid.list-view .delete-btn { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; background: #fff; border: 1px solid #e5e7eb; color: #9ca3af; font-size: 0.8rem; }
+            
+            /* 3. Input */
+            .dashboard-grid.list-view .holdings-input-group {
+                grid-column: 3 / 4;
+                width: 100%; display: flex; justify-content: flex-end;
+            }
+            .dashboard-grid.list-view .shares-input { width: 70px; padding: 4px; font-size: 0.85rem; height: 32px; }
+            .dashboard-grid.list-view .holdings-label { display: none; }
+            .dashboard-grid.list-view .holdings-val { display: none; }
+            
+            /* 4. Delete */
+            .dashboard-grid.list-view .delete-btn {
+                grid-column: 4 / 5;
+                position: static; width: 24px; height: 24px;
+                background: transparent; border: none; color: #d1d5db;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 1.2rem;
+            }
+            /* Explicitly set content here too */
             .dashboard-grid.list-view .delete-btn::before { content: '✕'; font-size: 0.9rem; }
         }
 
@@ -484,7 +522,7 @@
         .loader { position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; }
         .pokeball { width: 40px; height: 40px; background: #fff; border: 3px solid #333; border-radius: 50%; position: relative; overflow: hidden; animation: shake 1.5s infinite ease-in-out; }
         .pokeball::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: #ef4444; border-bottom: 2px solid #333; }
-        .pokeball::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; background: #fff; border: 3px solid #333; border-radius: 50%; z-index: 2; }
+        .pokeball::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; background: #fff; border: 3px solid #333; border-radius: 50%; z-index: 2; }
         .loading-text { font-size: 0.7rem; font-weight: 700; color: #6b7280; margin-top: 8px; }
         @keyframes shake { 0% { transform: rotate(0deg); } 20% { transform: rotate(-10deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-10deg); } 100% { transform: rotate(0deg); } }
 
@@ -493,6 +531,7 @@
             .header-left { justify-content: center; }
             .control-panel { justify-content: center; width: 100%; }
             .control-panel input { width: 80px; }
+            
             .dashboard-grid { grid-template-columns: 1fr; } 
             .history-card { gap: 4px; } 
         }
@@ -596,7 +635,8 @@
                      <option value="val_desc">Val: High ↓</option>
                      <option value="val_asc">Val: Low ↑</option>
                  </select>
-                 <button class="tool-btn" onclick="toggleView()">
+                 <!-- FIX: REMOVE toggleView button, forced to Card view by code, but button removed in V7.0 anyway -->
+                 <button class="tool-btn" onclick="toggleView()" style="display:none">
                      <span style="font-size:1rem;">⊞</span> <span id="view-text">Card</span>
                  </button>
                  <!-- Snap Button In Toolbar -->
@@ -676,7 +716,7 @@
         let statusUpdateTimer = null;
 
         let currentSort = 'def'; 
-        let currentView = window.innerWidth <= 768 ? 'list' : 'grid';
+        let currentView = 'grid'; // FORCED GRID
 
         function toggleDebug() {
             document.body.classList.toggle('debug-mobile');
@@ -700,10 +740,9 @@
         }
 
         window.addEventListener('load', () => {
-            if (window.innerWidth <= 768) {
-                currentView = 'list';
-                updateViewUI();
-            }
+            // FIX: Removed auto list view switch
+            currentView = 'grid';
+            updateViewUI();
             startWelcomeCountdown();
         });
 

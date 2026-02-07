@@ -150,7 +150,7 @@
         
         .subtitle { 
             font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; margin-top: 4px; 
-            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
         }
 
         .profile-pic {
@@ -168,37 +168,38 @@
 
         .control-panel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         
-        /* Updated Version Tag Style */
+        .info-group {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 4px;
+        }
+
         .version-tag {
             font-family: 'Roboto Mono', monospace; font-size: 0.75rem; color: #9ca3af; 
             background: #f9fafb; padding: 2px 6px; border-radius: 4px; border: 1px solid #e5e7eb; font-weight: 700;
-            line-height: 1; 
+            line-height: 1; margin-left: 4px;
         }
         
-        /* API Status Text (Moved to Title area) */
         .api-status-text {
-            font-family: 'Roboto Mono', monospace; font-size: 0.65rem; 
-            color: #cbd5e1; font-weight: 500; text-transform: uppercase; white-space: nowrap;
+            font-family: 'Roboto Mono', monospace; font-size: 0.6rem; 
+            color: #cbd5e1; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; margin-left: 6px;
         }
         .api-status-text.active { color: #d97706; font-weight: 700; }
 
         select.refresh-select {
-            background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 12px;
+            background: #f9fafb; border: 1px solid #d1d5db; padding: 0 6px;
             border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: #4b5563;
             outline: none; cursor: pointer;
+            height: 36px; 
         }
         select.refresh-select:focus { border-color: var(--pika-yellow); }
 
-        /* FIX 2: Reduced Search Input Width to ~45px */
         input[type="text"] {
-            background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 6px;
+            background: #f9fafb; border: 1px solid #d1d5db; padding: 0 6px;
             border-radius: 8px; font-size: 0.9rem; font-weight: 700;
             text-align: center; outline: none; transition: all 0.2s;
-            width: 45px; 
+            width: 70px; height: 36px;
         }
         input:focus { border-color: var(--pika-yellow); background: #fff; }
         
-        /* Number Input for Loan */
         input[type="number"] {
             background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 12px;
             border-radius: 8px; font-size: 0.9rem; font-weight: 700;
@@ -206,14 +207,18 @@
         }
 
         .btn {
-            border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;
+            border: none; padding: 0 16px; border-radius: 8px; cursor: pointer;
             font-weight: 700; font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; gap: 4px; white-space: nowrap;
+            height: 36px;
         }
         .btn-primary { background: var(--pika-yellow); color: #422006; }
         .btn-primary:hover { background: #fcd34d; }
         .btn-outline { background: white; border: 1px solid #d1d5db; color: var(--text-secondary); }
-        .btn-privacy { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
-        .btn-privacy.active { background: #1f2937; color: #fff; border-color: #374151; }
+        
+        .btn-square { width: 42px; padding: 0; justify-content: center; }
+        
+        .btn-privacy { background: var(--pika-yellow); color: #422006; border: none; height: 36px; }
+        .btn-privacy.active { background: #422006; color: var(--pika-yellow); }
 
         .tabs { max-width: 1200px; margin: 0 auto 16px auto; display: flex; gap: 10px; }
         .tab-btn {
@@ -235,14 +240,12 @@
         .ap-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .ap-val { font-family: 'Roboto Mono', monospace; font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; }
         .ap-sub { font-size: 0.75rem; color: #94a3b8; font-family: 'Roboto Mono', monospace; font-weight: 600;}
-        
         .ap-input {
             background: #ffffff; border: 2px solid #e5e7eb; color: #111827; 
             width: 100%; max-width: 140px; 
-            padding: 2px 8px; /* Slim padding */
-            height: 36px; /* Fixed Height */
+            padding: 2px 8px; height: 36px;
             text-align: left; border-radius: 8px; font-weight: 700; 
-            font-family: 'Roboto Mono', monospace; font-size: 0.9rem; 
+            font-family: 'Roboto Mono', monospace; font-size: 0.85rem; 
         }
         .ap-input:focus { border-color: var(--pika-yellow); outline: none; }
 
@@ -349,38 +352,31 @@
         }
 
         .data-tools { max-width: 1200px; margin: 0 auto 20px auto; display: flex; gap: 10px; justify-content: flex-end; }
-        
-        /* --- HISTORY V5.8 Fix: 4 Rows Stack --- */
         .history-list { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-        
         .history-card { 
             background: #fff; border-radius: 12px; padding: 14px 16px; border: 1px solid #e5e7eb; 
             display: flex; flex-direction: column; gap: 8px; /* Vertical Stack */
             box-shadow: var(--shadow); position: relative;
         }
 
-        /* Row 1: Time + Lev */
+        /* Row 1: Time & Lev */
         .h-row-top {
-            width: 100%; border-bottom: 1px solid #f3f4f6; padding-bottom: 6px; margin-bottom: 2px;
-            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
         }
         .h-time { font-size: 0.85rem; color: #374151; font-weight: 700; font-family: 'Roboto Mono', monospace; }
-        /* FIX 1: Lev moved to top right */
         .h-lev { font-size: 0.8rem; color: #9ca3af; font-weight: 600; }
         
         /* Row 2: Net Asset */
         .h-row-net { display: flex; justify-content: space-between; align-items: center; }
         .h-label { font-size: 0.65rem; color: #9ca3af; text-transform: uppercase; font-weight: 700; }
-        .h-val { font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); }
-        .h-val.net { color: #059669; }
+        .h-val.net { font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 1.1rem; color: #10b981; }
 
-        /* Row 3: Buttons (now is Row 3, since Lev row removed) */
+        /* Row 3: Buttons & Separator */
         .h-row-btns { 
             display: flex; justify-content: space-between; align-items: center; margin-top: 6px;
             padding-top: 8px; border-top: 1px dashed #f3f4f6;
         }
         
-        /* FIX 2: History Buttons Style */
         .toggle-btn { 
             background: transparent; border: none; color: #6b7280; 
             font-size: 1.2rem; cursor: pointer; padding: 4px;
@@ -397,8 +393,18 @@
         .h-details { width: 100%; background: #f9fafb; padding: 10px; border-radius: 8px; margin-top: 8px; display: none; }
         .history-card.open .h-details { display: block; }
         .h-stock-list { display: flex; flex-direction: column; gap: 4px; }
-        .h-stock-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; border-bottom: 1px dashed #e5e7eb; }
-
+        
+        /* FIX 1: Aligned Columns for Details */
+        .h-details-header {
+             display: flex; justify-content: space-between; font-size: 0.7rem; color: #9ca3af; font-weight: 700; 
+             border-bottom: 2px solid #e5e7eb; padding-bottom: 4px; margin-bottom: 6px;
+        }
+        .h-stock-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; border-bottom: 1px dashed #e5e7eb; align-items: center; }
+        
+        /* Specific column alignment */
+        .h-col-code { flex: 1; text-align: left; font-weight: 700; }
+        .h-col-price { flex: 1; text-align: center; }
+        .h-col-shares { flex: 1; text-align: right; }
 
         /* Card */
         .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid #e5e7eb; box-shadow: var(--shadow); transition: transform 0.2s; position: relative; display: flex; flex-direction: column; overflow: visible; min-height: auto; }
@@ -480,7 +486,7 @@
             </div>
             <div class="title-group">
                 <h1>Wall Street <span>Pika</span></h1>
-                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v5.8</span> <span id="api-status-top" class="api-status-text">Idle</span></div>
+                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v5.9.4</span> <span id="api-status-top" class="api-status-text">Idle (0)</span></div>
             </div>
             <img src="pikaprofile.png" alt="Profile" class="profile-pic" onclick="playPika()" title="Click for Pika!" onerror="this.style.display='none'">
         </div>
@@ -495,10 +501,9 @@
                 <option value="1800000">⏱️ 30m</option>
                 <option value="0">⏱️ STOP</option>
             </select>
-            <button class="btn btn-privacy" id="privacy-btn" onclick="togglePrivacy()" title="Privacy Mode">👁️</button>
-            <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline">📖</a>
-            <!-- FIX 2: Reduced Search Input -->
-            <input type="text" id="new-stock-input" placeholder="🔍" maxlength="5" onkeyup="if(event.key === 'Enter') addNewStock()" style="width: 45px;">
+            <button class="btn btn-privacy btn-square" id="privacy-btn" onclick="togglePrivacy()" title="Privacy Mode">👁️</button>
+            <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline btn-square">📖</a>
+            <input type="text" id="new-stock-input" placeholder="🔍" maxlength="5" onkeyup="if(event.key === 'Enter') addNewStock()">
             <button class="btn btn-primary" onclick="addNewStock()">+</button>
         </div>
     </header>
@@ -513,7 +518,8 @@
             <div class="ap-item">
                 <span class="ap-label">Total (HKD)</span>
                 <span class="ap-val p-mask" id="total-assets">HK$ --</span>
-                <span class="ap-sub">Rate: <span id="fx-rate">7.78</span> (USD/HKD)</span>
+                <!-- FIX 2: Updated Text -->
+                <span class="ap-sub">USD/HKD: <span id="fx-rate">7.78</span></span>
             </div>
             <div class="ap-item">
                 <span class="ap-label">Loan (HKD)</span>
@@ -802,7 +808,13 @@
                 if (data.stocks && Array.isArray(data.stocks)) {
                     marketData = data.stocks;
                     loanAmount = data.loan || 0;
-                    snapshots = data.snapshots || [];
+                    
+                    // FIX 1: FORCE NEW IDs FOR IMPORTED DATA
+                    snapshots = (data.snapshots || []).map((s, idx) => ({
+                        ...s,
+                        id: Date.now() + idx // Force new unique numeric ID
+                    }));
+                    
                     isPrivacy = data.privacy || false;
                     refreshInterval = data.refreshRate || 60000;
                     
@@ -853,7 +865,13 @@
                     if (data.stocks && Array.isArray(data.stocks)) {
                         marketData = data.stocks;
                         loanAmount = data.loan || 0;
-                        snapshots = data.snapshots || [];
+                        
+                        // FIX 1: FORCE NEW IDs
+                        snapshots = (data.snapshots || []).map((s, idx) => ({
+                            ...s,
+                            id: Date.now() + idx
+                        }));
+                        
                         isPrivacy = data.privacy || false;
                         refreshInterval = data.refreshRate || 60000;
                         
@@ -1274,7 +1292,7 @@
 
         function deleteSnapshot(id) {
             if(!confirm('Delete this record?')) return;
-            // FIX 1: Loose equality for robustness against JSON strings
+            // FIX 1: LOOSE EQUALITY TO FIX DELETE BUG
             snapshots = snapshots.filter(s => s.id != id);
             saveData();
             renderHistory();
@@ -1299,7 +1317,6 @@
                 return;
             }
             container.innerHTML = snapshots.map(s => {
-                // FIX 2: Split time into Date and Time spans
                 const [datePart, timePart] = s.time.split(' ');
                 
                 return `
@@ -1319,16 +1336,23 @@
                     <!-- Row 3: Buttons -->
                     <div class="h-row-btns">
                         <button class="toggle-btn" onclick="event.stopPropagation(); this.closest('.history-card').classList.toggle('open')"></button>
-                        <button class="del-hist-btn" onclick="event.stopPropagation(); deleteSnapshot(${s.id})"></button>
+                        <!-- FIX 1: FORCE QUOTES FOR ID -->
+                        <button class="del-hist-btn" onclick="event.stopPropagation(); deleteSnapshot('${s.id}')"></button>
                     </div>
 
                     <div class="h-details" onclick="event.stopPropagation()">
+                        <!-- FIX 5: ADDED HEADER ROW -->
+                        <div class="h-details-header">
+                            <span class="h-col-code">Code</span>
+                            <span class="h-col-price">Price</span>
+                            <span class="h-col-shares">Shares</span>
+                        </div>
                         <div class="h-stock-list">
-                            ${s.details.map(d => `
+                            ${s.details.filter(d => d.shares > 0).map(d => `
                                 <div class="h-stock-row">
-                                    <span style="font-weight:700;">${d.sym}</span>
-                                    <span>$${d.price.toFixed(2)}</span>
-                                    <span>${d.shares} sh</span>
+                                    <span class="h-col-code">${d.sym}</span>
+                                    <span class="h-col-price">$${d.price.toFixed(2)}</span>
+                                    <span class="h-col-shares">${d.shares}</span>
                                 </div>
                             `).join('')}
                         </div>

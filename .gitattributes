@@ -1,0 +1,14 @@
+# 自動處理文字檔案的換行符號，確保跨平台一致
+* text=auto
+
+# 強制指定 HTML, CSS, JS 提交時轉換為 LF
+*.html text
+*.css text
+*.js text
+
+# 確保圖片等二進位檔案不會被誤改
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary

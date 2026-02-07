@@ -222,7 +222,7 @@
         }
 
         .btn {
-            border: none; padding: 0 14px; border-radius: 8px; cursor: pointer;
+            border: none; padding: 0 16px; border-radius: 8px; cursor: pointer;
             font-weight: 700; font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; gap: 4px; white-space: nowrap;
             height: 36px;
         }
@@ -243,7 +243,7 @@
         }
         .tab-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
 
-        /* --- ASSET PANEL V6.9 --- */
+        /* --- ASSET PANEL --- */
         .asset-panel {
             max-width: 1200px; margin: 0 auto 24px auto;
             background: #1e293b; border-radius: var(--radius); padding: 20px; color: #fff;
@@ -261,7 +261,6 @@
         .ap-sub { font-size: 0.75rem; color: #94a3b8; font-family: 'Roboto Mono', monospace; font-weight: 600; }
         .net-val { color: var(--pika-yellow); text-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
         
-        /* FIX: Increased width and font size for Loan Input */
         .ap-input {
             background: #ffffff; border: 2px solid #e5e7eb; color: #111827; 
             width: 100%; max-width: 180px; padding: 2px 8px; height: 36px;
@@ -270,7 +269,7 @@
         }
         .ap-input:focus { border-color: var(--pika-yellow); outline: none; }
         
-        /* Snap Button (Toolbar) */
+        /* Snap Button In Toolbar */
         .snap-btn { 
             background: var(--pika-yellow); color: #422006; border: none;
             font-size: 0.75rem; padding: 0 12px; border-radius: 8px; height: 36px; 
@@ -283,10 +282,8 @@
         @media (min-width: 769px) {
             .asset-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
             .ap-item { flex-direction: column; }
-            
-            /* FIX: Ensure "Loan" and "Lev" are on the same row in Desktop */
+            /* Desktop view: Label & Lev on same row */
             .ap-left-col { flex-direction: row; align-items: baseline; gap: 8px; }
-            
             .ap-right-col { width: 100%; justify-content: flex-start; margin-top: 4px; }
             .ap-val { font-size: 1.5rem; }
         }
@@ -304,10 +301,17 @@
             
             .ap-left-col { align-items: center; } 
             .ap-val { font-size: 1.25rem; text-align: right; }
-            .ap-input { width: 150px; }
+            .ap-input { width: 140px; } 
             
-            /* Label adjustment */
             .ap-label { margin-bottom: 0; }
+            
+            /* FIX: Remove border-top, padding-top, margin-top from 3rd item */
+            .asset-panel .ap-item:nth-child(3) { 
+                border-top: none; 
+                padding-top: 0; 
+                margin-top: 0; 
+                grid-column: span 2; 
+            }
         }
         
         .mask-text { filter: blur(4px); opacity: 0.6; pointer-events: none; user-select: none; }
@@ -385,7 +389,8 @@
             .dashboard-grid.list-view .holdings-label { display: none; }
             .dashboard-grid.list-view .holdings-val { font-size: 1rem; min-width: 100px; text-align: right; }
             .dashboard-grid.list-view .delete-btn { position: static; transform: none; width: 32px; height: 32px; background: transparent; border: none; color: #9ca3af; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-            .dashboard-grid.list-view .delete-btn::before { content: '✕'; font-size: 1rem; } 
+            /* FIX: Clean Single Cross */
+            .dashboard-grid.list-view .delete-btn::before { content: none !important; } 
             .dashboard-grid.list-view .delete-btn:hover { background: #fee2e2; color: #ef4444; }
             .dashboard-grid.list-view .loader { flex-direction: row; gap: 12px; background: rgba(255,255,255,0.95); }
             .dashboard-grid.list-view .pokeball { width: 24px; height: 24px; border-width: 2px; }
@@ -479,7 +484,7 @@
         .loader { position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; }
         .pokeball { width: 40px; height: 40px; background: #fff; border: 3px solid #333; border-radius: 50%; position: relative; overflow: hidden; animation: shake 1.5s infinite ease-in-out; }
         .pokeball::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: #ef4444; border-bottom: 2px solid #333; }
-        .pokeball::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; background: #fff; border: 3px solid #333; border-radius: 50%; z-index: 2; }
+        .pokeball::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; background: #fff; border: 3px solid #333; border-radius: 50%; z-index: 2; }
         .loading-text { font-size: 0.7rem; font-weight: 700; color: #6b7280; margin-top: 8px; }
         @keyframes shake { 0% { transform: rotate(0deg); } 20% { transform: rotate(-10deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-10deg); } 100% { transform: rotate(0deg); } }
 
@@ -488,13 +493,8 @@
             .header-left { justify-content: center; }
             .control-panel { justify-content: center; width: 100%; }
             .control-panel input { width: 80px; }
-            .asset-panel { grid-template-columns: 1fr 1fr; gap: 16px; }
-            .asset-panel .ap-item:nth-child(3) { grid-column: span 2;}
             .dashboard-grid { grid-template-columns: 1fr; } 
-            
-            /* Mobile History */
-            .history-card { gap: 4px; } /* Tighten spacing */
-            
+            .history-card { gap: 4px; } 
         }
     </style>
 </head>
@@ -527,7 +527,7 @@
             </div>
             <div class="title-group">
                 <h1>Wall Street <span>Pika</span></h1>
-                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v6.9</span> <span id="api-status-top" class="api-status-text">Idle (0)</span></div>
+                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v6.9.2</span> <span id="api-status-top" class="api-status-text">Idle (0)</span></div>
             </div>
             <img src="pikaprofile.png" alt="Profile" class="profile-pic" onclick="playPika()" title="Click for Pika!" onerror="this.style.display='none'">
         </div>
@@ -557,10 +557,10 @@
     </div>
 
     <div id="view-dashboard" class="view-section active">
+        <!-- V6.9.1 ASSET PANEL -->
         <div class="asset-panel">
-            <!-- Item 1: Total & USD/HKD -->
+            <!-- Item 1: Total -->
             <div class="ap-item ap-item-total">
-                <!-- FIX 1: Removed USD/HKD text here, code hidden -->
                 <div class="ap-left-col"><span class="ap-label">Total (HKD)</span>
                     <span id="fx-rate" style="display:none">7.78</span>
                 </div>
@@ -570,7 +570,6 @@
             </div>
             <!-- Item 2: Loan & Lev -->
             <div class="ap-item ap-item-loan">
-                <!-- FIX 1: Spacing added before Lev -->
                 <div class="ap-left-col"><span class="ap-label">Loan (HKD)</span><span class="ap-sub" id="lev-display" style="margin-left: 12px;">Lev: --</span></div>
                 <div class="ap-right-col">
                      <input type="number" id="loan-input" class="ap-input" placeholder="0" onchange="updateLoan(this.value)">
@@ -600,7 +599,7 @@
                  <button class="tool-btn" onclick="toggleView()">
                      <span style="font-size:1rem;">⊞</span> <span id="view-text">Card</span>
                  </button>
-                 <!-- FIX 3: Snap Button In Toolbar -->
+                 <!-- Snap Button In Toolbar -->
                  <button class="snap-btn" onclick="takeSnapshot()">📷 Snap</button>
              </div>
         </div>
@@ -724,7 +723,18 @@
                 "一輩子抓著幾個機會，迅速行動，去做簡單又合乎邏輯的事情，就能得到很大的財富。",
                 "賺錢是為了更好的生活，我們卻在賺錢的過程中錯過了生活",
                 "短期內市場是投票機，長期來是一台稱重機",
-                "最重要的是耐性，交易決策宜緩不宜急。"
+                "勿重注純賭博性質玩股票，如重注價值性質股票需要有合理價值論點。",
+                "長期注意購買力額度和杠桿率，別被迫到走投無路。(艱苦時期生存下來的能力)",
+                "不要得意忘形，別冒太多風險，盡量壓低成本。",
+                "金錢是好僕人、壞主人。",
+                "寜買急升，勿買急跌！因有機會維持幾日多天！",
+                "永不應心急賺錢，更易落錯籌碼(標的和金額量)",
+                "有兩個難以抉擇的方向時，建議選一個心理壓力更少的，升又好跌又好相對舒服的，減少壓力",
+                "投資是不停的機率計算：這一切都是概率，必然性是存在的。(Bill Miller)",
+                "將投資和人生當成遊戲很有幫助，我們必須抱著自覺和始終如一的心態，努力讓自己獲成的機率增加到最大。",
+                "把人生當作遊戲，而非生存競爭，也不是至死方氣休的戰鬥。",
+                "最重要的投資能力是極度的耐性",
+                "交易決策宜緩不宜急。慢慢建倉、從容出貨，將錯誤與遺憾降至最低。最具破壞力的往往不是賬面盈虧，而是『懊悔』；你需要建立一套能讓自己感到最快樂的交易風格。"
             ];
             const el = document.getElementById('ticker-content');
             if (el) el.innerHTML = quotes.map(q => `<span class="ticker-item">★ ${q}</span>`).join('');
@@ -1524,7 +1534,7 @@
                     </div>` : '';
 
                 // MARKET TAG for LIST VIEW (Desktop)
-                // REMOVED TAG AS REQUESTED
+                // FIX 3: Removed market status text (e.g. PRE-MARKET) from list view as well by not generating it
                 const marketTagHtml = ''; 
 
                 return `

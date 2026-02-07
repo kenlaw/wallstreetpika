@@ -53,7 +53,7 @@
         
         /* Debug Mobile */
         body.debug-mobile {
-            max-width: 400px;
+            max-width: 375px;
             margin: 0 auto;
             border-left: 1px solid #d1d5db;
             border-right: 1px solid #d1d5db;
@@ -192,14 +192,29 @@
         }
         select.refresh-select:focus { border-color: var(--pika-yellow); }
 
-        input[type="text"] {
-            background: #f9fafb; border: 1px solid #d1d5db; padding: 0 6px;
+        /* Search Wrapper */
+        .search-wrapper { position: relative; display: flex; align-items: center; }
+        .search-wrapper input {
+            background: #f9fafb; border: 1px solid #d1d5db; padding: 0 34px 0 10px;
             border-radius: 8px; font-size: 0.9rem; font-weight: 700;
-            text-align: center; outline: none; transition: all 0.2s;
-            width: 70px; height: 36px;
+            outline: none; transition: all 0.2s;
+            width: 90px; height: 36px; 
         }
-        input:focus { border-color: var(--pika-yellow); background: #fff; }
+        .search-wrapper input:focus { border-color: var(--pika-yellow); background: #fff; }
         
+        .search-add-btn {
+            position: absolute; right: 4px; top: 4px;
+            width: 28px; height: 28px; 
+            border: none; 
+            background: var(--pika-accent); /* Light Yellow */
+            color: var(--pika-gold); /* Gold */
+            border-radius: 50%; /* Circle */
+            cursor: pointer; font-weight: 800; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .search-add-btn:active { transform: scale(0.9); }
+
         input[type="number"] {
             background: #f9fafb; border: 1px solid #d1d5db; padding: 8px 12px;
             border-radius: 8px; font-size: 0.9rem; font-weight: 700;
@@ -228,35 +243,66 @@
         }
         .tab-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
 
-        /* --- ASSET PANEL --- */
+        /* --- ASSET PANEL V6.7 (Cleaned up) --- */
         .asset-panel {
             max-width: 1200px; margin: 0 auto 24px auto;
             background: #1e293b; border-radius: var(--radius); padding: 20px; color: #fff;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 24px; align-items: start;
         }
+        
         .ap-item { display: flex; flex-direction: column; gap: 6px; }
-        .ap-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .ap-val { font-family: 'Roboto Mono', monospace; font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; }
-        .ap-sub { font-size: 0.75rem; color: #94a3b8; font-family: 'Roboto Mono', monospace; font-weight: 600;}
+        .ap-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        .ap-val { font-family: 'Roboto Mono', monospace; font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; word-break: break-all; }
+        .ap-sub { font-size: 0.75rem; color: #94a3b8; font-family: 'Roboto Mono', monospace; font-weight: 600; }
+        .net-val { color: var(--pika-yellow); text-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
+        
         .ap-input {
             background: #ffffff; border: 2px solid #e5e7eb; color: #111827; 
-            width: 100%; max-width: 140px; 
-            padding: 2px 8px; height: 36px;
+            width: 100%; max-width: 140px; padding: 2px 8px; height: 36px;
             text-align: left; border-radius: 8px; font-weight: 700; 
             font-family: 'Roboto Mono', monospace; font-size: 0.85rem; 
         }
         .ap-input:focus { border-color: var(--pika-yellow); outline: none; }
-
-        .net-val { color: var(--pika-yellow); text-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
+        
+        /* FIX 1: Snap Button Styling - in Toolbar now */
         .snap-btn { 
-            background: #374151; color: #fff; border: 1px solid #475569; 
-            font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; 
-            cursor: pointer; font-weight: 600; white-space: nowrap;
-            margin-left: auto; 
+            background: var(--pika-yellow); color: #422006; border: none;
+            font-size: 0.75rem; padding: 0 12px; border-radius: 8px; height: 32px;
+            cursor: pointer; font-weight: 700; white-space: nowrap;
+            display: flex; align-items: center; gap: 4px;
         }
-        .snap-btn:hover { background: #475569; }
+        .snap-btn:hover { background: #fcd34d; }
+
+        /* DESKTOP ASSET PANEL (>768px): 3 Cols */
+        @media (min-width: 769px) {
+            .asset-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
+            .ap-inner { display: flex; flex-direction: column; } 
+            .ap-sub-inline { display: block; margin-left: 0; margin-top: 2px; } 
+            .ap-item.full-row { grid-column: auto; border: none; padding: 0; margin: 0; flex-direction: column; justify-content: flex-start; }
+            .ap-item.full-row .ap-left { display: flex; flex-direction: column; gap: 6px; }
+        }
+
+        /* MOBILE ASSET PANEL (<768px): 1 Col (Rows) */
+        @media (max-width: 768px) {
+            .asset-panel { display: flex; flex-direction: column; gap: 12px; padding: 16px; /* No extra bottom padding */ }
+            
+            /* Row Layout: Label Left - Value Right */
+            .ap-item { 
+                flex-direction: row; justify-content: space-between; align-items: center; 
+                width: 100%; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 8px;
+            }
+            .ap-item:last-of-type { border-bottom: none; }
+            
+            .ap-val { font-size: 1.25rem; text-align: right; }
+            .ap-input { width: 100px; }
+            
+            /* Subtext alignment */
+            .ap-left-col { flex-direction: column; align-items: flex-start; gap: 0; }
+            .ap-sub-inline { margin-left: 0; font-size: 0.65rem; }
+            
+            /* FIX 2: No special padding for Snap Button in Asset Panel as it moved */
+            .ap-item:first-child { padding-right: 0; }
+        }
         
         .mask-text { filter: blur(4px); opacity: 0.6; pointer-events: none; user-select: none; }
         .view-section { display: none; } .view-section.active { display: block; }
@@ -297,9 +343,16 @@
         /* Toolbar */
         .dashboard-toolbar { max-width: 1200px; margin: 0 auto 16px auto; display: flex; justify-content: space-between; align-items: center; }
         .toolbar-group { display: flex; gap: 8px; }
-        .tool-btn { background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 6px 12px; font-size: 0.75rem; font-weight: 700; color: #4b5563; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
+        .tool-btn { background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 0 12px; height: 32px; font-size: 0.75rem; font-weight: 700; color: #4b5563; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
         .tool-btn:hover { background: #f9fafb; color: var(--text-primary); border-color: #9ca3af; }
         .tool-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+        
+        /* Sort select in toolbar */
+        select.sort-select {
+            background: #fff; border: 1px solid #d1d5db; padding: 0 6px;
+            border-radius: 8px; font-size: 0.8rem; font-weight: 700; color: #4b5563;
+            outline: none; cursor: pointer; height: 32px; 
+        }
 
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
         
@@ -360,9 +413,7 @@
         }
 
         /* Row 1: Time & Lev */
-        .h-row-top {
-            width: 100%; display: flex; justify-content: space-between; align-items: center;
-        }
+        .h-row-top { width: 100%; display: flex; justify-content: space-between; align-items: center; }
         .h-time { font-size: 0.85rem; color: #374151; font-weight: 700; font-family: 'Roboto Mono', monospace; }
         .h-lev { font-size: 0.8rem; color: #9ca3af; font-weight: 600; }
         
@@ -371,37 +422,21 @@
         .h-label { font-size: 0.65rem; color: #9ca3af; text-transform: uppercase; font-weight: 700; }
         .h-val.net { font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 1.1rem; color: #10b981; }
 
-        /* Row 3: Buttons & Separator */
-        .h-row-btns { 
-            display: flex; justify-content: space-between; align-items: center; margin-top: 6px;
-            padding-top: 8px; border-top: 1px dashed #f3f4f6;
-        }
+        /* Row 3: Buttons */
+        .h-row-btns { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding-top: 8px; border-top: 1px dashed #f3f4f6; }
         
-        .toggle-btn { 
-            background: transparent; border: none; color: #6b7280; 
-            font-size: 1.2rem; cursor: pointer; padding: 4px;
-        }
+        .toggle-btn { background: transparent; border: none; color: #6b7280; font-size: 1.2rem; cursor: pointer; padding: 4px; }
         .toggle-btn::after { content: '▼'; } 
-        
-        .del-hist-btn { 
-            background: transparent; border: none; color: #ef4444; 
-            font-size: 1.2rem; cursor: pointer; padding: 4px;
-        }
+        .del-hist-btn { background: transparent; border: none; color: #ef4444; font-size: 1.2rem; cursor: pointer; padding: 4px; }
         .del-hist-btn::after { content: '✕'; } 
 
-        /* History Details */
         .h-details { width: 100%; background: #f9fafb; padding: 10px; border-radius: 8px; margin-top: 8px; display: none; }
         .history-card.open .h-details { display: block; }
         .h-stock-list { display: flex; flex-direction: column; gap: 4px; }
         
-        /* FIX 1: Aligned Columns for Details */
-        .h-details-header {
-             display: flex; justify-content: space-between; font-size: 0.7rem; color: #9ca3af; font-weight: 700; 
-             border-bottom: 2px solid #e5e7eb; padding-bottom: 4px; margin-bottom: 6px;
-        }
+        .h-details-header { display: flex; justify-content: space-between; font-size: 0.7rem; color: #9ca3af; font-weight: 700; border-bottom: 2px solid #e5e7eb; padding-bottom: 4px; margin-bottom: 6px; }
         .h-stock-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; border-bottom: 1px dashed #e5e7eb; align-items: center; }
         
-        /* Specific column alignment */
         .h-col-code { flex: 1; text-align: left; font-weight: 700; }
         .h-col-price { flex: 1; text-align: center; }
         .h-col-shares { flex: 1; text-align: right; }
@@ -450,10 +485,7 @@
             .asset-panel { grid-template-columns: 1fr 1fr; gap: 16px; }
             .asset-panel .ap-item:nth-child(3) { grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 4px; }
             .dashboard-grid { grid-template-columns: 1fr; } 
-            
-            /* Mobile History */
-            .history-card { gap: 4px; } /* Tighten spacing */
-            
+            .history-card { gap: 4px; } 
         }
     </style>
 </head>
@@ -486,7 +518,7 @@
             </div>
             <div class="title-group">
                 <h1>Wall Street <span>Pika</span></h1>
-                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v5.9.4</span> <span id="api-status-top" class="api-status-text">Idle (0)</span></div>
+                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v6.7</span> <span id="api-status-top" class="api-status-text">Idle (0)</span></div>
             </div>
             <img src="pikaprofile.png" alt="Profile" class="profile-pic" onclick="playPika()" title="Click for Pika!" onerror="this.style.display='none'">
         </div>
@@ -503,8 +535,10 @@
             </select>
             <button class="btn btn-privacy btn-square" id="privacy-btn" onclick="togglePrivacy()" title="Privacy Mode">👁️</button>
             <a href="https://sites.google.com/view/wallstreetpikabible/" target="_blank" class="btn btn-outline btn-square">📖</a>
-            <input type="text" id="new-stock-input" placeholder="🔍" maxlength="5" onkeyup="if(event.key === 'Enter') addNewStock()">
-            <button class="btn btn-primary" onclick="addNewStock()">+</button>
+            <div class="search-wrapper">
+                <input type="text" id="new-stock-input" placeholder="🔍" maxlength="5" onkeyup="if(event.key === 'Enter') addNewStock()">
+                <button class="search-add-btn" onclick="addNewStock()">+</button>
+            </div>
         </div>
     </header>
 
@@ -515,24 +549,26 @@
 
     <div id="view-dashboard" class="view-section active">
         <div class="asset-panel">
-            <div class="ap-item">
-                <span class="ap-label">Total (HKD)</span>
-                <span class="ap-val p-mask" id="total-assets">HK$ --</span>
-                <!-- FIX 2: Updated Text -->
-                <span class="ap-sub">USD/HKD: <span id="fx-rate">7.78</span></span>
+            <!-- Item 1: Total & USD/HKD -->
+            <div class="ap-item ap-item-total">
+                <div class="ap-left-col"><span class="ap-label">Total (HKD)</span><span class="ap-sub">USD/HKD:<span id="fx-rate">7.78</span></span></div>
+                <div class="ap-right-col">
+                    <span class="ap-val p-mask" id="total-assets">HK$ --</span>
+                </div>
             </div>
-            <div class="ap-item">
-                <span class="ap-label">Loan (HKD)</span>
-                <input type="number" id="loan-input" class="ap-input" placeholder="0" onchange="updateLoan(this.value)">
-                <!-- FIX for Align: Lev under Loan -->
-                <span class="ap-sub" id="lev-display" style="margin-top:4px;">Lev: --</span>
-            </div>
-            <div class="ap-item full-row">
-                <div class="ap-left" style="display:flex; flex-direction:column;">
-                    <span class="ap-label">Net Equity</span>
+            <!-- Item 2: Net Equity -->
+            <div class="ap-item ap-item-net">
+                <div class="ap-left-col"><span class="ap-label">Net Equity</span></div>
+                <div class="ap-right-col">
                     <span class="ap-val net-val p-mask" id="net-value">HK$ --</span>
                 </div>
-                <button class="snap-btn" onclick="event.stopPropagation(); takeSnapshot()">📷 Snap</button>
+            </div>
+            <!-- Item 3: Loan & Lev -->
+            <div class="ap-item ap-item-loan">
+                <div class="ap-left-col"><span class="ap-label">Loan (HKD)</span><span class="ap-sub" id="lev-display">Lev: --</span></div>
+                <div class="ap-right-col">
+                     <input type="number" id="loan-input" class="ap-input" placeholder="0" onchange="updateLoan(this.value)">
+                </div>
             </div>
         </div>
 
@@ -541,12 +577,18 @@
         <div class="dashboard-toolbar">
              <div style="font-size:0.7rem; color:#9ca3af; font-weight:700;">STOCKS</div>
              <div class="toolbar-group">
-                 <button class="tool-btn" onclick="toggleSort()">
-                     <span style="font-size:1rem;">⇅</span> <span id="sort-text">Def</span>
-                 </button>
+                 <select class="refresh-select sort-select" id="sort-select" onchange="changeSort(this.value)">
+                     <option value="def">Sort: Def</option>
+                     <option value="desc">Chg: High ↓</option>
+                     <option value="asc">Chg: Low ↑</option>
+                     <option value="val_desc">Val: High ↓</option>
+                     <option value="val_asc">Val: Low ↑</option>
+                 </select>
                  <button class="tool-btn" onclick="toggleView()">
                      <span style="font-size:1rem;">⊞</span> <span id="view-text">Card</span>
                  </button>
+                 <!-- FIX 1: Snap Button Moved to Toolbar -->
+                 <button class="snap-btn" onclick="takeSnapshot()">📷 Snap</button>
              </div>
         </div>
 
@@ -1375,11 +1417,24 @@
         function toggleSort() {
             if (currentSort === 'def') currentSort = 'desc';
             else if (currentSort === 'desc') currentSort = 'asc';
+            else if (currentSort === 'asc') currentSort = 'val_desc'; // NEW
+            else if (currentSort === 'val_desc') currentSort = 'val_asc'; // NEW
             else currentSort = 'def';
             
-            document.getElementById('sort-text').innerText = 
-                currentSort === 'def' ? 'Def' : (currentSort === 'desc' ? 'High' : 'Low');
-            
+            let label = 'Def';
+            if (currentSort === 'desc') label = 'Chg ↓';
+            if (currentSort === 'asc') label = 'Chg ↑';
+            if (currentSort === 'val_desc') label = 'Val ↓';
+            if (currentSort === 'val_asc') label = 'Val ↑';
+
+            // FIX: Update sort select if exists
+            const select = document.getElementById('sort-select');
+            if (select) select.value = currentSort;
+        }
+
+        // FIX: Sort Select Handler
+        function changeSort(val) {
+            currentSort = val;
             render();
         }
 
@@ -1414,7 +1469,15 @@
                 displayData.sort((a, b) => {
                     const ca = a.changePercent || 0;
                     const cb = b.changePercent || 0;
-                    return currentSort === 'asc' ? ca - cb : cb - ca;
+                    
+                    // NEW: Value Sort
+                    const va = (a.shares || 0) * (a.currentPrice || 0);
+                    const vb = (b.shares || 0) * (b.currentPrice || 0);
+
+                    if (currentSort === 'asc') return ca - cb;
+                    if (currentSort === 'desc') return cb - ca;
+                    if (currentSort === 'val_asc') return va - vb;
+                    if (currentSort === 'val_desc') return vb - va;
                 });
             }
 
@@ -1428,15 +1491,9 @@
                 const sign = stock.changePercent >= 0 ? '+' : '';
                 
                 let timeDisplay = '--:--';
-                if (stock.lastUpdate) {
-                    timeDisplay = new Date(stock.lastUpdate * 1000).toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit'});
-                }
-                
-                let timeHtml = `<div class="data-meta"><span class="data-time">Update: ${timeDisplay} ET</span></div>`;
-                if (stock.isStale) {
-                    // FIX 3: Removed specific market status text check, simplified logic
-                     timeHtml = `<div class="data-meta"><span class="data-time">Closed: ${timeDisplay}</span></div>`;
-                }
+                // REMOVED TIME HTML FROM CARD VIEW AS REQUESTED
+                // FIX 4: NO TIME IN CARD/LIST VIEW
+                let timeHtml = '';
 
                 const shares = stock.shares || 0;
                 const priceVal = stock.currentPrice || 0;
@@ -1454,7 +1511,7 @@
                     </div>` : '';
 
                 // MARKET TAG for LIST VIEW (Desktop)
-                // FIX 3: Removed market status text (e.g. PRE-MARKET) from list view as well by not generating it
+                // REMOVED TAG AS REQUESTED
                 const marketTagHtml = ''; 
 
                 return `

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23facc15' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/></svg>" type="image/svg+xml">
-    <title>Mini Stock Dashboard</title>
+    <title>Mini Stock Dashboard v7.0</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Roboto+Mono:wght@500;700&display=swap');
 
@@ -394,25 +394,8 @@
             .dashboard-grid.list-view .pokeball { width: 24px; height: 24px; border-width: 2px; }
         }
 
-        /* Mobile List */
-        @media (max-width: 768px) {
-            .dashboard-grid.list-view .card { flex-direction: column; align-items: stretch; padding: 12px 16px; gap: 0; position: relative; }
-            .dashboard-grid.list-view .card-top { width: 100%; justify-content: space-between; margin-bottom: 8px; display: flex; padding: 0; }
-            .dashboard-grid.list-view .stock-info { display: flex; align-items: center; gap: 8px; padding: 0; }
-            .dashboard-grid.list-view .market-tag { display: none; } 
-            .dashboard-grid.list-view .price-group { flex-direction: column; align-items: flex-end; }
-            .dashboard-grid.list-view .price-val { font-size: 1.2rem; }
-            .dashboard-grid.list-view .price-change { font-size: 0.85rem; margin: 0; }
-            .dashboard-grid.list-view .data-meta { display: none; }
-            .dashboard-grid.list-view .holdings-row { width: 100%; margin: 0; border: none; padding: 0; border-top: 1px dashed #e5e7eb; padding-top: 8px; justify-content: space-between; background: transparent; border-radius: 0; }
-            .dashboard-grid.list-view .holdings-input-group { gap: 6px; }
-            .dashboard-grid.list-view .shares-input { width: 90px; padding: 6px; font-size: 0.85rem; }
-            .dashboard-grid.list-view .holdings-label { display: block; font-size: 0.65rem; margin-bottom: 0; }
-            .dashboard-grid.list-view .holdings-val { font-size: 0.9rem; min-width: 80px; text-align: right; }
-            .dashboard-grid.list-view .delete-btn { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; background: #fff; border: 1px solid #e5e7eb; color: #9ca3af; font-size: 0.8rem; }
-            .dashboard-grid.list-view .delete-btn::before { content: '✕'; font-size: 0.9rem; }
-        }
-
+        /* Mobile List View - REMOVED, Using Standard Card View for Mobile */
+        
         .data-tools { max-width: 1200px; margin: 0 auto 20px auto; display: flex; gap: 10px; justify-content: flex-end; }
         .history-list { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
         .history-card { 
@@ -481,7 +464,7 @@
         
         .loader { position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; }
         .pokeball { width: 40px; height: 40px; background: #fff; border: 3px solid #333; border-radius: 50%; position: relative; overflow: hidden; animation: shake 1.5s infinite ease-in-out; }
-        .pokeball::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: #ef4444; border-bottom: 3px solid #333; }
+        .pokeball::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: #ef4444; border-bottom: 2px solid #333; }
         .pokeball::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; background: #fff; border: 3px solid #333; border-radius: 50%; z-index: 2; }
         .loading-text { font-size: 0.7rem; font-weight: 700; color: #6b7280; margin-top: 8px; }
         @keyframes shake { 0% { transform: rotate(0deg); } 20% { transform: rotate(-10deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-10deg); } 100% { transform: rotate(0deg); } }
@@ -494,6 +477,9 @@
             
             .dashboard-grid { grid-template-columns: 1fr; } 
             .history-card { gap: 4px; } 
+            
+            /* FIX 2: Hide Toggle Button on Mobile */
+            #view-toggle-btn { display: none !important; }
         }
     </style>
 </head>
@@ -526,7 +512,7 @@
             </div>
             <div class="title-group">
                 <h1>Wall Street <span>Pika</span></h1>
-                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v7.0</span> <span id="api-status-top" class="api-status-text">Idle (0)</span></div>
+                <div class="subtitle">Mini Stock Dashboard <span class="version-tag">v7.0.0</span> <span id="api-status-top" class="api-status-text">Idle (0)</span></div>
             </div>
             <img src="pikaprofile.png" alt="Profile" class="profile-pic" onclick="playPika()" title="Click for Pika!" onerror="this.style.display='none'">
         </div>
@@ -589,13 +575,16 @@
              <div style="font-size:0.7rem; color:#9ca3af; font-weight:700;">STOCKS</div>
              <div class="toolbar-group">
                  <select class="refresh-select sort-select" id="sort-select" onchange="changeSort(this.value)">
-                     <!-- REMOVED DEF, DEFAULT VAL: HIGH -->
                      <option value="val_desc" selected>Val: High ↓</option>
                      <option value="val_asc">Val: Low ↑</option>
                      <option value="desc">Chg: High ↓</option>
                      <option value="asc">Chg: Low ↑</option>
                  </select>
-                 <!-- REMOVED View Toggle Button -->
+                 <!-- FIX 3: Add ID for toggling -->
+                 <button class="tool-btn" id="view-toggle-btn" onclick="toggleView()">
+                     <span style="font-size:1rem;">⊞</span> <span id="view-text">Card</span>
+                 </button>
+                 <!-- Snap Button In Toolbar -->
                  <button class="snap-btn" onclick="takeSnapshot()">📷 Snap</button>
              </div>
         </div>
@@ -671,8 +660,9 @@
         let nextFetchTime = 0;
         let statusUpdateTimer = null;
 
-        let currentSort = 'val_desc'; // DEFAULT VALUE HIGH
-        let currentView = 'grid'; // FORCED GRID
+        // V7.0 CHANGE: Default sort is now Value Descending, 'def' is removed
+        let currentSort = 'val_desc'; 
+        let currentView = 'grid'; // Default, enforced on load
 
         function toggleDebug() {
             document.body.classList.toggle('debug-mobile');
@@ -696,6 +686,7 @@
         }
 
         window.addEventListener('load', () => {
+            // FIX: Enforce Grid View on Load
             currentView = 'grid';
             updateViewUI();
             startWelcomeCountdown();
@@ -757,6 +748,7 @@
         }
 
         function updateGlobalStatus() {
+            const state = getMarketState();
             // FIX 3: Removed text update for global status
         }
 
@@ -771,15 +763,30 @@
                 
                 let content = '';
                 if (isLoading) {
-                    content = `<div class="mini-loader"><div class="mini-pokeball"></div></div><span class="mc-name">${m.n}</span><span class="mc-price" style="opacity:0">--</span><span class="mc-change" style="opacity:0">--</span>`;
+                    content = `
+                        <div class="mini-loader">
+                            <div class="mini-pokeball"></div>
+                        </div>
+                        <span class="mc-name">${m.n}</span>
+                        <span class="mc-price" style="opacity:0">--</span>
+                        <span class="mc-change" style="opacity:0">--</span>
+                    `;
                 } else if (isError) {
-                    content = `<span class="mc-name">${m.n}</span><span class="mc-price" style="color:#9ca3af">-</span><span class="mc-change" style="color:#9ca3af">-</span>`;
+                    content = `
+                        <span class="mc-name">${m.n}</span>
+                        <span class="mc-price" style="color:#9ca3af">-</span>
+                        <span class="mc-change" style="color:#9ca3af">-</span>
+                    `;
                 } else {
                     const p = d.price;
                     const c = d.change;
                     const col = c >= 0 ? 'text-up' : 'text-down';
                     const sign = c >= 0 ? '+' : '';
-                    content = `<span class="mc-name">${m.n}</span><span class="mc-price">${p.toFixed(2)}</span><span class="mc-change ${col}">${sign}${c.toFixed(2)}%</span>`;
+                    content = `
+                        <span class="mc-name">${m.n}</span>
+                        <span class="mc-price">${p.toFixed(2)}</span>
+                        <span class="mc-change ${col}">${sign}${c.toFixed(2)}%</span>
+                    `;
                 }
                 
                 return `
@@ -1416,18 +1423,12 @@
 
         // --- NEW: View & Sort Logic ---
         function toggleSort() {
-            if (currentSort === 'def') currentSort = 'desc';
+            // V7.0 Logic: Cycle Val Desc -> Val Asc -> Desc -> Asc (No Def)
+            if (currentSort === 'val_desc') currentSort = 'val_asc';
+            else if (currentSort === 'val_asc') currentSort = 'desc';
             else if (currentSort === 'desc') currentSort = 'asc';
-            else if (currentSort === 'asc') currentSort = 'val_desc'; // NEW
-            else if (currentSort === 'val_desc') currentSort = 'val_asc'; // NEW
-            else currentSort = 'def';
+            else currentSort = 'val_desc';
             
-            let label = 'Def';
-            if (currentSort === 'desc') label = 'Chg ↓';
-            if (currentSort === 'asc') label = 'Chg ↑';
-            if (currentSort === 'val_desc') label = 'Val ↓';
-            if (currentSort === 'val_asc') label = 'Val ↑';
-
             // FIX: Update sort select if exists
             const select = document.getElementById('sort-select');
             if (select) select.value = currentSort;
@@ -1466,21 +1467,22 @@
             const state = getMarketState();
             
             let displayData = [...marketData];
-            if (currentSort !== 'def') {
-                displayData.sort((a, b) => {
-                    const ca = a.changePercent || 0;
-                    const cb = b.changePercent || 0;
-                    
-                    // NEW: Value Sort
-                    const va = (a.shares || 0) * (a.currentPrice || 0);
-                    const vb = (b.shares || 0) * (b.currentPrice || 0);
+            
+            // V7.0: ALWAYS SORT, Default to val_desc
+            displayData.sort((a, b) => {
+                const ca = a.changePercent || 0;
+                const cb = b.changePercent || 0;
+                
+                // Value Sort
+                const va = (a.shares || 0) * (a.currentPrice || 0);
+                const vb = (b.shares || 0) * (b.currentPrice || 0);
 
-                    if (currentSort === 'asc') return ca - cb;
-                    if (currentSort === 'desc') return cb - ca;
-                    if (currentSort === 'val_asc') return va - vb;
-                    if (currentSort === 'val_desc') return vb - va;
-                });
-            }
+                if (currentSort === 'asc') return ca - cb;
+                if (currentSort === 'desc') return cb - ca;
+                if (currentSort === 'val_asc') return va - vb;
+                // Default: val_desc
+                return vb - va;
+            });
 
             container.innerHTML = displayData.map(stock => {
                 const p = stock.currentPrice ? stock.currentPrice.toFixed(2) : '--';
@@ -1492,8 +1494,6 @@
                 const sign = stock.changePercent >= 0 ? '+' : '';
                 
                 let timeDisplay = '--:--';
-                // REMOVED TIME HTML FROM CARD VIEW AS REQUESTED
-                // FIX 4: NO TIME IN CARD/LIST VIEW
                 let timeHtml = '';
 
                 const shares = stock.shares || 0;
@@ -1511,8 +1511,6 @@
                         <div class="loading-text">載入中...</div>
                     </div>` : '';
 
-                // MARKET TAG for LIST VIEW (Desktop)
-                // REMOVED TAG AS REQUESTED
                 const marketTagHtml = ''; 
 
                 return `

@@ -243,11 +243,12 @@
         }
         .tab-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
 
-        /* --- ASSET PANEL --- */
+        /* --- ASSET PANEL V6.9 --- */
         .asset-panel {
             max-width: 1200px; margin: 0 auto 24px auto;
             background: #1e293b; border-radius: var(--radius); padding: 20px; color: #fff;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            position: relative; 
         }
         
         /* Common AP Styles */
@@ -260,18 +261,19 @@
         .ap-sub { font-size: 0.75rem; color: #94a3b8; font-family: 'Roboto Mono', monospace; font-weight: 600; }
         .net-val { color: var(--pika-yellow); text-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
         
+        /* FIX: Increased width and font size for Loan Input */
         .ap-input {
             background: #ffffff; border: 2px solid #e5e7eb; color: #111827; 
-            width: 100%; max-width: 140px; padding: 2px 8px; height: 36px;
+            width: 100%; max-width: 180px; padding: 2px 8px; height: 36px;
             text-align: left; border-radius: 8px; font-weight: 700; 
-            font-family: 'Roboto Mono', monospace; font-size: 0.85rem; 
+            font-family: 'Roboto Mono', monospace; font-size: 1.1rem; 
         }
         .ap-input:focus { border-color: var(--pika-yellow); outline: none; }
         
-        /* FIX 1: Snap Button Styling - In Toolbar */
+        /* Snap Button (Toolbar) */
         .snap-btn { 
             background: var(--pika-yellow); color: #422006; border: none;
-            font-size: 0.75rem; padding: 0 12px; border-radius: 8px; height: 36px; /* Matched height */
+            font-size: 0.75rem; padding: 0 12px; border-radius: 8px; height: 36px; 
             cursor: pointer; font-weight: 700; white-space: nowrap;
             display: flex; align-items: center; gap: 4px;
         }
@@ -281,7 +283,10 @@
         @media (min-width: 769px) {
             .asset-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
             .ap-item { flex-direction: column; }
-            .ap-left-col { flex-direction: column; align-items: flex-start; gap: 6px; }
+            
+            /* FIX: Ensure "Loan" and "Lev" are on the same row in Desktop */
+            .ap-left-col { flex-direction: row; align-items: baseline; gap: 8px; }
+            
             .ap-right-col { width: 100%; justify-content: flex-start; margin-top: 4px; }
             .ap-val { font-size: 1.5rem; }
         }
@@ -483,9 +488,13 @@
             .header-left { justify-content: center; }
             .control-panel { justify-content: center; width: 100%; }
             .control-panel input { width: 80px; }
-            
+            .asset-panel { grid-template-columns: 1fr 1fr; gap: 16px; }
+            .asset-panel .ap-item:nth-child(3) { grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 4px; }
             .dashboard-grid { grid-template-columns: 1fr; } 
-            .history-card { gap: 4px; } 
+            
+            /* Mobile History */
+            .history-card { gap: 4px; } /* Tighten spacing */
+            
         }
     </style>
 </head>
@@ -551,13 +560,17 @@
         <div class="asset-panel">
             <!-- Item 1: Total & USD/HKD -->
             <div class="ap-item ap-item-total">
-                <div class="ap-left-col"><span class="ap-label">Total (HKD)</span><span class="ap-sub">USD/HKD:<span id="fx-rate">7.78</span></span></div>
+                <!-- FIX 1: Removed USD/HKD text here, code hidden -->
+                <div class="ap-left-col"><span class="ap-label">Total (HKD)</span>
+                    <span id="fx-rate" style="display:none">7.78</span>
+                </div>
                 <div class="ap-right-col">
                     <span class="ap-val p-mask" id="total-assets">HK$ --</span>
                 </div>
             </div>
             <!-- Item 2: Loan & Lev -->
             <div class="ap-item ap-item-loan">
+                <!-- FIX 1: Spacing added before Lev -->
                 <div class="ap-left-col"><span class="ap-label">Loan (HKD)</span><span class="ap-sub" id="lev-display" style="margin-left: 12px;">Lev: --</span></div>
                 <div class="ap-right-col">
                      <input type="number" id="loan-input" class="ap-input" placeholder="0" onchange="updateLoan(this.value)">
@@ -587,7 +600,7 @@
                  <button class="tool-btn" onclick="toggleView()">
                      <span style="font-size:1rem;">⊞</span> <span id="view-text">Card</span>
                  </button>
-                 <!-- FIX 1: Snap Button Moved to Toolbar -->
+                 <!-- FIX 3: Snap Button In Toolbar -->
                  <button class="snap-btn" onclick="takeSnapshot()">📷 Snap</button>
              </div>
         </div>
